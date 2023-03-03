@@ -1,0 +1,93 @@
+# Matching
+
+Both **regression** and **matching/weighting** are strategies to close the backdoor path between $T$ and $Y$. *Both are conditional on observable covariates.* However, matching/weighting provides a way to model treatment selection so that everyone looks the same on the pre-treatment covariates.
+
+**Matching/weighting** refers to a set of procedures that modify the original sample in preparation for a statistical analysis. It's a form of data pre-processing. The goal is to create a sample that *looks like* it was created from a randomized experiment.
+
+*What are the benefits of matching/weighting procedures?*
+
+1.  They are *less restrictive* about functional form than regression. We rely less on parametric assumptions. The intuition is the same as with an experiment: if we can create sufficient overlap and balance between treatment and control groups, then we should get a reasonable estimate of the treatment effect, *even if the model used to estimate it is misspecified*.
+2.  Regression models on pre-processed data gives us two opportunities to close backdoor paths (i.e., "double robustness").
+3.  They provide an explicit way of dealing with treatment heterogeneity.
+
+## Exact Matching
+
+The logic of exact matching is relatively straightforward, we want *apples to apples* comparisons.
+
+Instead of a simple independence assumption, we now rely on a **conditional independence assumption** (CIA).
+
+$$
+\begin{align}
+E\big[Y^1 \mid T=1, S \big] &= E\big[Y^1 \mid T=0, S \big] \\
+E\big[Y^0 \mid T=1, S \big] &= E\big[Y^0 \mid T=0, S \big]
+\end{align}
+$$ {#eq-cond-ind-assumption}
+
+<aside>
+
+*Ignorability*
+
+</aside>
+
+The assumption in @eq-cond-ind-assumption means that we can observe counterfactuals, conditional on **pre-treatment** variables $S$. Unfortunately, we cannot test the conditional independence assumption directly.
+
+Three overall assumptions:
+
+1.  **Ignorability** or selection on observables.
+2.  Overlap---any individual case has a non-zero probability of treatment.
+3.  Stable Unit Treatment Value Assumption (SUTVA)---i.e., no spillovers.
+
+*Note. In cases when we have treatment effect heterogeneity, the ATT, ATU, and ATE estimates will be different, as exemplified in @tbl-t-eff-het.*
+
+| SES |  N  | degree | earnings |
+|:---:|:---:|:------:|:--------:|
+|  1  | 150 |   0    |  2,000   |
+|  1  | 50  |   1    |  4,000   |
+|  2  | 100 |   0    |  6,000   |
+|  2  | 100 |   1    |  8,000   |
+|  3  | 50  |   0    |  10,000  |
+|  3  | 150 |   1    |  14,000  |
+
+: Treatment Effect Heterogeneity {#tbl-t-eff-het}
+
+*What is our estimand [@lundberg2021]?*
+
+The procedure is relatively straightforward:
+
+1.  Take the differences between treated and untreated groups within each stratum of $S$.
+2.  Weight these differences by the right distribution the estimand we are interested in:
+    -   ATE: weight the differences by the total sample distribution of $S$.
+
+    -   ATT: weight differences by the distribution of $S$ for treated cases.
+
+For @tbl-t-eff-het:
+
+$$
+\begin{align}
+\text{ATT} &= \frac{2000(50) + 2000(100) + 4000(150)}{50 + 100 + 150} = 3,000 \\\\
+\text{ATE} &= \frac{2000 (200) + 2000(200) + 4000(200)}{200 + 200 + 200} = 2,666.7
+\end{align}
+$$
+
+The ATT is usually our most common estimand because treatment cases tend to be less common than control cases. In some cases, like the one portrayed in @tbl-t-eff-het-2, we might not be able to calculate the ATE.
+
+|             SES              |               N                |            degree            |             earnings              |
+|:----------------:|:---------------:|:---------------:|:------------------:|
+| [1]{style="color: #C5C5C5;"} | [150]{style="color: #C5C5C5;"} | [0]{style="color: #C5C5C5;"} | [2,000]{style="color: #C5C5C5;"}  |
+|              1               |               0                |              1               |                 ?                 |
+| [2]{style="color: #C5C5C5;"} | [100]{style="color: #C5C5C5;"} | [0]{style="color: #C5C5C5;"} | [6,000]{style="color: #C5C5C5;"}  |
+| [2]{style="color: #C5C5C5;"} | [100]{style="color: #C5C5C5;"} | [1]{style="color: #C5C5C5;"} | [8,000]{style="color: #C5C5C5;"}  |
+| [3]{style="color: #C5C5C5;"} | [50]{style="color: #C5C5C5;"}  | [0]{style="color: #C5C5C5;"} | [10,000]{style="color: #C5C5C5;"} |
+| [3]{style="color: #C5C5C5;"} | [150]{style="color: #C5C5C5;"} | [1]{style="color: #C5C5C5;"} | [14,000]{style="color: #C5C5C5;"} |
+
+: Treatment Effect Heterogeneity (Modified Example) {#tbl-t-eff-het-2}
+
+But the ATT is just as easy to calculate as before:
+
+$$
+\text{ATT} = \frac{(?)(0) + 2000(100) + 4000(150)}{0 + 100 + 150} = 3,200
+$$
+
+**Common Support**
+
+Strata that have only treatment or control cases (not both) are called **off support.** Strata with both treatment and control cases are in the **region of common support.**

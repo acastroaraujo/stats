@@ -1,0 +1,27 @@
+## When $X$ changes once
+
+**Causal inference**
+
+> -   Causal inference is hard because we're usually comparing a "treated" person to an "untreated" person. That is, we're using a comparison between two *different* individuals to estimate the effect of some $X$. But the two people might be different for reasons other than $X$. This risk of *confounding* is the main limitation in using **between-subject variation** to estimate causal effects.
+>
+> -   When possible, we can make causal inferences more plausible by comparing a "treated" person to *themselves* when they were untreated. That is, a person serves as their own **counterfactual**. Comparisons between different "versions" of the same person are less likely be confounded because many characteristics of persons do not change over time. Thus, **within-subject variation** is more useful for causal inference in observational data.
+
+**Time-varying treatments that change once.**
+
+*Using within-person variation to estimate a treatment effect is often called using **fixed effects**.*
+
+The nomenclature of "fixed effects" in causal inference is not the same as the one in "mixed models." In the `lmer` output fixed effects and random effects means this:
+
+$$
+y_{it} = \underbrace{\beta_0 + \beta_1 x_{it}}_\text{fixed part} + \underbrace{\alpha_i + \epsilon_{it}}_\text{random part}
+$$
+
+Here we focus on the causal inference/ econometrics definition. In other words, we are focusing on **within-subject variation.**
+
+Note:
+
+-   Time-constant confounders are eliminated by using within-subject variation.
+
+-   Time-varying confounders are still a problem
+
+weight loss example 1

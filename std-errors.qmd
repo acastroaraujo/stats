@@ -1,0 +1,87 @@
+## Standard Errors
+
+The **sampling distribution** of regression coefficients follows a normal distribution.
+
+In the case of one predictor $X$:
+
+$$
+\begin{align}
+Y &\sim \text{Normal}(\beta_0 + \beta_1 X, \ \sigma^2) \\\\
+\hat{\beta_i} &\sim \text{Normal}(\beta_i, \text{SE} (\hat \beta_i)^2)\\\\
+\text{SE}(\hat \beta_1) &= \sqrt{\frac{\hat \sigma^2}{\sum_{i=1}^n (x - \bar x)^2}} = \sqrt{\frac{\hat \sigma^2}{\text{var}(X) \times n}}
+\end{align}
+$$
+
+<aside>The standard deviation of a sampling distribution is often referred to as a **standard error**.</aside>
+
+In the case of multiple predictors ($\mathbf X$) and coefficients ($\boldsymbol \beta$):
+
+$$
+\begin{align}
+Y &\sim \text{Normal}(\boldsymbol{X \beta}, \sigma^2 \boldsymbol I) \\
+\boldsymbol{\hat \beta} &\sim \text{Normal}(\boldsymbol \beta, \boldsymbol \Sigma) \\
+\boldsymbol \Sigma &=\widehat{\text{var}} \hat{(\boldsymbol \beta)} = \hat \sigma^2 (\boldsymbol{X^\top X})^{-1}
+\end{align}
+$$
+
+This is what allows us to do *hypothesis testing^TM^* on regression coefficients.
+
+We calculate the standard error because we want to know the standard deviation of that sampling distribution. But our standard errors are probably always wrong.
+
+Two assumptions:
+
+-   $\varepsilon$ *is normally distributed.*
+
+-   $\varepsilon$ is *independent and identically distributed*.
+
+These assumptions are most obviously false when dealing with time series or data that's geographically clustered (i.e., temporal or spatial autocorrelation).
+
+There could also be heteroskedasticity---i.e., the variance of $\varepsilon$ is related to other variables in the model.
+
+**Fixing Standard Errors**
+
+-   Heteroskedasticity-robust sandwich estimator (e.g., Huber-White). We weight observations with big residuals more when calculating the variance.
+
+    $$
+    (\boldsymbol{X^\top X})^{-1}(\boldsymbol{X^\top \Sigma X}) (\boldsymbol{X}^\top X)^{-1}
+    $$
+
+-   Heteroskedasticity and Autocorrelation Consistent (HEC) standard errors (e.g., Newey-West).
+
+-   Clustered standard errors. *Why not go with multilevel models instead?*
+
+-   Bootstrap methods.
+
+<aside>Sandwich estimators leave the coefficient estimates ($\boldsymbol{\hat \beta}$) intact!</aside>
+
+*Why do economists care so much about standard errors?* They have a toxic culture that values "gotcha!" moments during conference presentations.
+
+We can use the `estimatr` package to easily calculate these robust standard errors.
+
+```{r}
+library(estimatr)
+data(restaurant_inspections, package = "causaldata")
+
+m1 <- lm(inspection_score ~ Year + Weekend, 
+         data = restaurant_inspections)
+
+m2 <- lm_robust(inspection_score ~ Year + Weekend, 
+          data = restaurant_inspections, 
+          se_type = "HC1"
+)
+
+modelsummary::msummary(list(m1, m2), gof_omit = ".")
+```
+
+This is how the matrix algebra works:
+
+```{r}
+X <- model.matrix(m1)
+A <- solve(t(X) %*% X) 
+r <- m1$residuals
+B <- (t(X) %*% diag(r^2) %*% X)
+varB <- A %*% B %*% A
+sqrt(diag(varB)) ## robust standard errors
+```
+
+See @king2015 for more.

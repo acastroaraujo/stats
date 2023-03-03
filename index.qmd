@@ -1,0 +1,5 @@
+# Preface {.unnumbered}
+
+This is a Quarto book.
+
+It contains my notes on various things related to applied statistics.

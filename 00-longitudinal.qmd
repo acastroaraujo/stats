@@ -1,0 +1,417 @@
+# Data
+
+Longitudinal data involves **repeated** measures of the **same units** (e.g., individuals, organizations, countries) over **time**.
+
+These methods are usually designed for situations in which the number of units is much greater than the number of time periods. When the data starts moving in the direction of $T \gt N$ we enter the world of **time series analysis**.
+
+There are two basic things we do with longitudinal or panel data.
+
+1.  **Model the trajectory of an outcome** in groups or individuals over time.
+2.  Use the information from repeated measures to make better **causal inferences**.
+
+Usually we want to figure out some average treatment effect (**ATE**).
+
+$$
+\text{ATE} = \frac{1}{n} \sum_{i=1} (Y^1_i - Y^0_i)
+$$
+
+Suppose we want to figure out the effect of *union membership* (treatment)on *wages* (outcome).
+
+$Y_i^1$ is either (a) person *i'*s wages if they belong to a union or (b) what person *i*'s wages *would be* if they *did* belong to a union;
+
+$Y_i^0$ is either (a) person *i*'s wages if they *don't* belong to a union or (b) what person *i*'s wages *would be* if they *didn't* belong to a union REPHRASE
+
+Sometimes the ATE doesn't make sense. For example, it doesn't make sense for *all* adults in a society (including, say, teachers and engineers) to participate in a government job training program intended for low-income workers.
+
+The average treatment effect on the treated (**ATT**). The difference the treatment made to those who actually received it.
+
+$$
+\text{ATT} = \frac{1}{n} \sum_{i=1}^n (Y_i (\text{treated}) - Y_i^0 (\text{treated}))
+$$
+
+Here, $Y_i$ is actually observed. The counterfactual is the untreated values $Y^0$.
+
+Time-varying and time-constant
+
+-   `dpylr`'s `pivot_wider()` and `pivot_longer()`
+
+-   `panelr`, by Jacob Long, has `widen_panel()` and `long_panel()`, which are even easier
+
+```{r}
+library(tidyverse)
+library(panelr)
+data("teen_poverty", package = "panelr")  ## five wave panel of teenage girls
+
+teen_long <- teen_poverty |> 
+  panelr::long_panel(
+    id = "id",       # the name of the existing ID variable
+    wave = "wave",   # the name you want for the new time variable
+    begin = 1,       # the indicator of the first period
+    end = 5          # the indicator of the last period
+  )
+
+## repeat with pivot longer
+
+teen_long <- teen_poverty |> 
+  pivot_longer(cols = matches("\\d$"), 
+               names_to = c(".value", "wave"),
+               names_pattern = "(.*)(.)",
+               names_transform = list(wave = as.integer)) |> 
+  mutate(id = factor(id)) |> 
+  group_by(id)
+```
+
+This is how the data looks like now:
+
+```{r}
+teen_long
+```
+
+Steve says there are five basic situations we will consider. Each provides different possibilities and challenges.
+
+-   When $X$ doesn't change
+
+    *mixed models and growth curves*
+
+-   When $X$ changes once (for some or for everyone)
+
+    *pre/post*
+
+    *difference-in-differences*
+
+-   When $X$ changes at different times, in the same direction
+
+    *two-way fixed effects*
+
+    *difference-in-differences for staggered treatments*
+
+-   When $X$ changes at different times, in any direction
+
+    *two-way fixed effects (again)*
+
+    *mixed models (again)*
+
+    *within-between and correlated random effects*
+
+-   As above, plus $X$ is determined dynamically
+
+    *dynamic structural equation models (SEM)*
+
+**Two types of variance: between-unit and within-unit variance.**
+
+Our intuitions about where the variance is are not always great.
+
+```{r}
+b_var <- WageData |> 
+  group_by(id) |> 
+  summarize(avg_wage = mean(lwage)) |> 
+  summarize(b_var = var(avg_wage)) |> 
+  as.numeric() 
+
+tot_var <- WageData |> 
+  summarize(tot_var = var(lwage)) |> 
+  as.numeric()
+
+w_var <- WageData |> 
+  group_by(id) |> 
+  ## this new variable has zero between-person variance
+  mutate(dev_lwage = lwage - mean(lwage)) |> 
+  ungroup() |> 
+  summarize(w_var = var(dev_lwage)) |> 
+  as.numeric()
+
+w_var + b_var
+
+b_var / tot_var
+```
+
+https://en.wikipedia.org/wiki/Intraclass_correlation
+
+Or % of total variation that's ....
+
+Two types of variables
+
+| Type          | Description                                                                               | Examples               |
+|---------------|-------------------------------------------------------------------------------------------|------------------------|
+| Time-constant | Variables that only vary between units                                                    | Birth country, "race"  |
+| Time-varying  | Variables measured over time but that almost always have both within and between variance | Earnings, satisfaction |
+
+*Note. It's rare to see variables that only have within-unit variation.*
+
+```{r}
+WageData |> are_varying()
+
+d <- panel_data(WageData, wave = "t")
+
+are_varying(d) ## soooo slow
+
+WageData |> 
+  group_by(id) |> 
+  summarize(across(!t, \(x) length(unique(x)))) |> 
+  summarize(across(everything(), \(x) length(unique(x))))
+
+WageData |> 
+  group_by(id) |> 
+  mutate(across(!t, sd)) |> 
+  ungroup() |> 
+  summarize(across(!c(id, t), \(x) !all(x == 0))) |> 
+  unlist()
+
+WageData |> 
+  group_by(id) |> 
+  mutate(across(everything(), n_distinct)) |> 
+  ungroup() |> 
+  summarize(across(everything(), \(x) !all(x == 1))) |> 
+  unlist()
+```
+
+## When X doesn't change.
+
+```{r}
+d <- panel_data(WageData,    # define d as panel version of wage data
+                id = id,     # id variable
+                wave = t)
+```
+
+```{r}
+d <- d |> 
+  mutate(college = ifelse(ed >= 16, 1L, 0L))
+
+linreg <- lm(lwage ~ college, data = d)
+summary(linreg)
+```
+
+```{r}
+huxtable::huxreg("Linear regression" = linreg,
+       stars = NULL,
+       error_pos = "right",
+       statistics = c("Resid. SD" = "sigma"),
+       coefs = c("Intercept" = "(Intercept)", 
+                 "College" = "college"))
+```
+
+```{r}
+exp(0.353)
+```
+
+This model has three main limitations when used on panel data:
+
+1.  It doesn't allow there to be any individual-specific differences in `lwage` except `college`.
+
+2.  It assumes all fluctuations around the average ( $\beta_0 + \beta_1 \text{college}_i$ ) are simply random ( $\epsilon_{it}$ ).
+
+3.  Like any regression model, it assumes independent observations. The model doesn't "know" that 7 observations come from each person. So the standard errors will be too small.
+
+Also, if we were interested in the "treatment effect" of college, then this model also assumes no omitted variables.
+
+```{r}
+d$linpred <- predict(linreg)
+d$pred <- d$linpred + rnorm(nrow(d), 0, summary(linreg)$sigma)
+
+d |> 
+  group_nest() |> 
+  slice_sample(n = 100) |> 
+  unnest() |> 
+  ggplot(aes(t, pred, group = id, color = factor(college))) + 
+  geom_line(alpha = 1/2)
+```
+
+A mixed model
+
+$$
+\text{lwage}_{it} = \beta_0 + \beta_1 \text{college}_i + \underbrace{\alpha_i + \epsilon_{it}}_\text{error term}
+$$
+
+-   $\alpha_i$ is unobserved stuff about individuals that doesn't change (no $t$ subscript).
+
+-   $\epsilon_{it}$ is unobserved stuff about individuals that *does* change and is assumed to be conditionally independent of each other.
+
+We can only separate these two types of errors because we have repeated measurements.
+
+```{r}
+library(lme4)
+mixed <- lmer(
+  lwage ~ college + (1|id), 
+  data = d, 
+  REML = FALSE ## ask not to do restricted maximum likelihood
+)
+mixed
+```
+
+The estimates are the same but the standard errors are over twice as large.
+
+The residual standard deviation is smaller because a lot of the variation gets soaked up by $\alpha_i$.
+
+**Adding time**
+
+The mixed model we estimated above assumes the **conditional independence** of the $\epsilon_{it}$. This means that, once we know about *the person* the observation comes from ( $\beta_0 + \beta_1 \text{college}_i$ ), all that person's additional fluctuations over time are assumed to be random. But if wages are *increasing* (or decreasing), this will not be true; observations closer in time will be more similar.
+
+The simplest way to deal with this is to model the passage of time. And the simplest way to do *that* is to allow a linear time trend.
+
+```{r}
+d <- d |> mutate(t0 = t - 1L) ## start time at 0 so intercept is meaningful
+
+mod1 <- lmer(lwage ~ college + t0 + (1 | id),
+             data = d,
+             REML = FALSE)
+
+summary(mod1)
+```
+
+This model assumes that everyone is growing at the same rate.
+
+Visualize predictions.
+
+> 1.  The passage of time affects everyone the same (what we just did)
+>
+> 2.  The passage of time affects everyone the same in the same treatment group (e.g., college vs. non-college)
+>
+> 3.  Each individual gets their own time trend (this is a **latent growth curve** model)
+>
+> 4.  A combination of (2) and (3)
+
+Adding complexity will lead to overfitting the sample!
+
+```{r}
+# NOTE: update() allows you to change something about a model, leaving the rest the same
+mod2 <- update(mod1, formula = lwage ~ college * t0 + (1      | id ))
+mod3 <- update(mod1, formula = lwage ~ college + t0 + (1 + t0 | id ))
+mod4 <- update(mod1, formula = lwage ~ college * t0 + (1 + t0 | id ))
+
+BIC(mod1, mod2, mod3, mod4) |> 
+  format(scientific = FALSE) |> 
+  arrange(desc(BIC))
+
+```
+
+### Exercises
+
+Use the `WageData` from the `panelr` package. You don't need to make a `panel_data` version of `WageData` for this analysis, but you can if you want. We will use it later. Estimate the following mixed models using `lmer()` with maximum likelihood (`REML = FALSE`):
+
+1.  Log wage as a function of college and linear time
+2.  As #1, plus a random slope on time
+3.  As #2, but with time as a quadratic
+4.  Use splines.
+
+```{r}
+#| message: false
+
+library(tidyverse)
+library(lme4)
+data("WageData", package = "panelr")
+
+d <- WageData |> 
+  mutate(college = ifelse(ed >= 16, 1L, 0L), t0 = as.integer(t - 1), id = factor(id))
+
+mod1 <- lmer(lwage ~ college + t0 + (1 | id), data = d, REML = FALSE)
+
+mod2 <- lmer(lwage ~ college + t0 + (t0 | id), data = d, REML = FALSE)
+
+mod3a <- lmer(lwage ~ college + t0 + I(t0^2) + (t0 + I(t0^2) | id), data = d, REML = FALSE)
+mod3c <- lmer(lwage ~ college + poly(t0, degree = 2) + (poly(t0, degree = 2) | id), data = d, REML = FALSE)
+
+
+bs2d4k <- function(x) {
+  splines::bs(x, degree = 2, df = 5)
+} 
+
+mod4 <- lmer(lwage ~ college + bs2d4k(t0) + (1+bs2d4k(t0) | id), data = d, REML = FALSE)
+
+## splines
+
+BIC(mod4, mod1) |> 
+  format(scientific = FALSE) |> 
+  arrange(desc(BIC))
+
+d$pred <- predict(mod4)
+
+
+id_sample <- sample(unique(d$id), size = 100)
+
+d |> 
+  filter(id %in% id_sample) |> 
+  mutate(college = factor(college)) |> 
+  ggplot(aes(t0, pred, group = id, color = college)) + 
+  geom_line(alpha = 1/2)
+
+d |> 
+  mutate(college = factor(college)) |> 
+  group_by(college, t0) |> 
+  summarize(pred = mean(pred)) |> 
+  ggplot(aes(t0, pred, color = college)) + 
+  geom_line() + 
+  ylim(5, 8)
+```
+
+Adding more covariates:
+
+```{r}
+mod6 <- lmer(
+  lwage ~ college * (t0 + I(t0^2)) + occ + ind + south + 
+    smsa + fem + union + blk + (1 + t0 + I(t0^2) | id),
+  data = d,
+  control = lmerControl(optimizer ="Nelder_Mead")
+)
+```
+
+*Note. The default optimizer for `lmer()` is BOBYQA. You can change to Nelder-Mead if you're having trouble with optimization. In general, scaling your variables so that they are on the same order of magnitude helps as well.*
+
+```{r}
+broom.mixed::tidy(mod6) |> 
+  filter(is.na(group)) |> 
+  select(term, estimate, std.error, statistic) |> 
+  knitr::kable(digits = 3)
+```
+
+> These beta coefficients could all be interpreted in the usual way: the expected difference in the outcome when X is one unit higher.
+>
+> **However**, we are only including them in an attempt to identify the *treatment effect* of college on log wages. That's our research question. So we have no need to interpret these additional coefficients.
+>
+> If we have adjusted properly for all variables that confound the causal relationship between college and wages (which is unlikely!) then (and only then) we have identified the ATE.
+
+<aside>
+
+*Hünermund and Louw. 2020. On the Nuisance of Control Variables in Regression Analysis.*
+
+*The Table 2 Fallacy: Presenting and Interpreting Confounder and Modifier Coefficients*
+
+</aside>
+
+Use [`glmmTMB`](https://CRAN.R-project.org/package=glmmTMB) instead of `lme4`, especially for modeling binary outcomes.
+
+```{r}
+library(glmmTMB)
+
+d <- d |> mutate(work50 = if_else(wks >=50, 1L, 0L))      # create new outcome variable
+
+
+bgmod1 <- glmmTMB(work50 ~ college + t0 + (1 + t0 | id), # formula (same as lme4)
+                  data = d,                              # data
+                  family = binomial)                     # distribution for outcome
+
+summary(bgmod1)
+```
+
+**Summary**
+
++-----------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------+
+| Facts                                                                                   | Misconceptions                                                                                                                 |
++=========================================================================================+================================================================================================================================+
+| -   correct for the dependence of multiple observations per individual                  | -   do *not* "control for" unobserved unit-level heterogeneity                                                                 |
+|                                                                                         |                                                                                                                                |
+| -   can deal with missing outcome data under the MAR assumption                         |     we come back to this when considering fixed effects estimation                                                             |
+|                                                                                         |                                                                                                                                |
+| -   efficiently combine within and between data to obtain optimal group-level estimates | -   do *not* remove *all* problems related to missing data                                                                     |
+|                                                                                         |                                                                                                                                |
+|                                                                                         | -   do *not* improve causal identification; MMs only identify a treatment effect if all confounders have been properly modeled |
++-----------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------+
+
+Here we used mixed models to understand *trajectories.*
+
+## **Why MM's don't improve causal inference**
+
+-   Despite what some people seem to think\*, the $\alpha_i$ term in a mixed model is **just another error term**. It doesn't "control for" other factors any more than $\epsilon_i$ "controls for" other causes of $Y$ in a linear regression. The model *assumes* that these terms are independent of the predictors.
+
+-   The only ways to identify the effect of a time-constant treatment with a mixed model are (1) to have experimental data (like the opiates example) or (2) to adjust for all relevant confounders. This is exactly the same as "regular" regression. The panel structure of the data is doing nothing here to establish causality.
+
+-   If you want stronger causal inferences with observational panel data, you must specifically use **within-person variance** or **time-varying treatments**. That is our next topic.

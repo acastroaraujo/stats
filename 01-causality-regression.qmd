@@ -1,0 +1,78 @@
+# Regression
+
+## Assumptions
+
+The **exogeneity** assumption requires that $X$ is *uncorrelated* with $\varepsilon$.
+
+By adding a variable to a regression we "adjust for it." The path $X \leftarrow Z \rightarrow Y$ is closed in the following regression:
+
+$$
+Y = \beta_0 + \beta_1 X + \beta_2 Z + \varepsilon
+$$
+
+We can think of any variable that predicts $Y$ but is not contained in the model as being part of the error term.
+
+## Translating DAGs
+
+![Flow Chart For Constructing Regression Equations](images/reg-chart.png){#fig-reg-chart fig-align="center" width="70%"}
+
+<aside>@huntington-klein2021 [pp. 199]</aside>
+
+Suppose our causal diagram is as follows:
+
+![](images/dag1.png){fig-align="center" width="60%"}
+
+Further suppose that the true data generating process is as follows:
+
+$$
+y_i = \beta_0 + \beta_1 t_i + \beta_2 z_i + \varepsilon_i 
+$$
+
+If we omit $z$, then our regression is as follows:
+
+$$
+y_i = \beta_0^* + \beta_1^* t_i+ \varepsilon^*_i
+$$
+
+Finally, suppose that the association between $z$ and $t$ is defined in terms of a third regression:
+
+$$
+z_i = \gamma_0 + \gamma_1 t_i + u_i
+$$
+
+If we substitute this representation of $t$ into the original "true" regression and rearrange the terms, we the the following:
+
+$$
+y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta_1 + \beta_2 \gamma_1)}_{\beta_1^*} + \underbrace{(\beta_2 u + \varepsilon)}_{\varepsilon^*}
+$$
+
+If there's no association between the treatment and the purported confounder ($\gamma_1 = 0$), then there is no bias.
+
+In R:
+
+```{r}
+N <- 1e3
+b0 <- 1 
+b1 <- 2  ## effect of t
+b2 <- 3
+g0 <- 2
+g1 <- 3
+
+d <- tibble::tibble(
+  z = runif(N, min = -50, max = 50),
+  t = rnorm(N, mean = (z - g0)/g1, sd = 1),
+  y = rnorm(N, mean = b0 + b1*t + b2*z, sd = 1)
+)
+
+mtrue <- lm(y ~ t + z, data = d)
+mconf <- lm(y ~ t, data = d)
+
+modelsummary::msummary(
+  models = list(mtrue, mconf), 
+  gof_omit = "."
+)
+```
+
+Here, we see that $\beta_1 \approx 2$ and $\beta_1^* \approx 10$.
+
+## Balance

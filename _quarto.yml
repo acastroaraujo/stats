@@ -1,0 +1,32 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Statistics Notes"
+  author: "andrés castro araújo"
+  date: last-modified
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - part: 00-regression.qmd
+      chapters:
+        - std-errors.qmd
+        - marginal-effects.qmd
+    - part: 00-causality.qmd
+      chapters:
+        - 01-causality-regression.qmd
+        - 02-matching.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: lumen
+    mainfont: Amiri
+    monofont: Fira Code
+    fontsize: 1em
+
+editor: visual
+

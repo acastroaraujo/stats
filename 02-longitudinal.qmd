@@ -1,0 +1,87 @@
+## Difference-in-Differences
+
+Parallel trends, sketch
+
+As a regression model, two-period DiD looks like this:
+
+$$
+\mathbb{E}(y_{it}) = \beta_0 + \beta_1\text{treat} + \beta_2\text{post} + \beta_3\text{treat}\times\text{post}
+$$
+
+Where `treat` is a 0/1 variable indicating whether the case will ever be treated and `post` is a 0/1 variable indicating whether the observation is in the second period of observation (here, 1978).
+
+$\beta_3$ is our estimate of the **average treatment effect on the treated**. This is because we are using the untreated people to estimate what the treated people *would have looked like* in the absence of the training program. That is, they help us estimate the *counterfactual*.
+
+Test for parallel trends (slide 83)
+
+**Assumptions**
+
+DiD (like all approaches) makes assumptions. The most important are:
+
+1.  **Parallel trends**: in the absence of the treatment, the two groups' trajectories would have changed the same amount.
+
+2.  **No anticipation**: the treated group doesn't change their behavior in *anticipation* of the treatment.
+
+These assumptions are impossible to test in the two-period case. With two pre-treatment periods, they can be evaluated.
+
+*Note. Measurement is important. Two trends may be parallel in dollars, but then they will not be parallel in **log** dollars.*
+
+## When $X$ changes at different times, in the same direction.
+
+When treatment timing varies (i.e., doesn't happen at the same time) and is not subsequently reversed this is usually called **differential timing** or **staggered treatments**. We will always have three or more waves in this situation, by definition. We have two major options here:
+
+1.  Use **two-way fixed effects** regression (TWFE), which includes fixed effects for *unit* and *time period*.
+
+2.  Use a technique built for differential timing DiD, such as the one outlined in @callaway2021
+
+    Use the [`did`](https://bcallaway11.github.io/did/) package.
+
+Prior to 2019, almost everyone would have used (1). But *many* recent papers have shown that TWFE only identifies the average treatment effect on the treated (ATT) when it is the *same regardless of timing.* The techniques in (2) allow for different effects for differently timed groups. We do not have the time in this course to cover this fast-evolving literature. But we do offer a full course on DiD.
+
+<aside>TWFE is biased when the effects of treatments continue to grow over time.</aside>
+
+Also see: @goodman-bacon2021, @sun2021
+
+**Two-way fixed effects (TWFE)**
+
+This estimation strategy attempts to remove *two* major sources of confounding to identify the treatment effect:
+
+1.  The individual **unit** fixed effect
+
+2.  The effect of being observed at a particular **time**
+
+This leaves the presence or absence of the treatment as varying within persons. For those who are sometimes treated and sometimes not, we can compare their treated and untreated times to estimate the effect.
+
+Those who are *always* or *never* treated do not contribute any information to fixed effects estimation. We don't typically have to drop them from the dataset; their information is simply not used.
+
+*Note. This takes care of all time-invariant confounders. Pretty good! But it does so at the cost of removing all between person variation.*
+
+**Replicate slide 96 in Stan**
+
+In sum TWFE allows us to:
+
+-   adjust for *all* time-constant confounders
+
+-   adjust for the effects of specific time periods
+
+-   identify homogeneous treatment effects if assumptions are met
+
+I doesn't let us:
+
+-   rule out time-varying confounders (without modeling them)
+
+-   rule out reverse causality
+
+-   deal with heterogeneous treatment effects
+
+## Reversible Treatments
+
+So far, all the treatments we have seen "turn on" at some point but then never "turn off" again. But many real-life treatments are not that way. Consider dieting, union membership, watching cable news, attending church, or adhering to a medication regime. These are all examples of **reversible treatments**.
+
+In more general terms, this is a situation where both $Y$ *and* $X$ might vary from time period to time period. This extra variation introduces a few new possibilities.
+
+## Multilevel
+
+slide 113
+
+slide 128 is pretty cool about separating between and within effects that my go in different directions

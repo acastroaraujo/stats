@@ -1,0 +1,9 @@
+---
+title: "Marginal Effects"
+---
+
+https://theeffectbook.net/ch-StatisticalAdjustment.html#eq:regression-15
+
+Marginal effect at the mean. Icky.
+
+Average Marginal effects.
