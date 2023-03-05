@@ -1,0 +1,179 @@
+# Regression Adjustments
+
+*This notebook is about regression in the context of causal inference.*
+
+In the usual context of regression, predictive inference relates to comparisons *between* units. In the context of causal inference, we attempt to make comparisons of different treatments *as if applied to the same units.*
+
+In order to make causal interpretations of regression coefficients we rely very strong assumptions.
+
+In short, causal effects can be estimated with regression if the model includes all confounding variables *and* if the model is correct.
+
+## Translating DAGs
+
+![Flow Chart For Constructing Regression Equations](images/reg-chart.png){#fig-reg-chart fig-align="center" width="70%"}
+
+<aside>@huntington-klein2021 [pp. 199]</aside>
+
+Suppose our causal diagram is as follows:
+
+![](images/dag1.png){fig-align="center" width="40%"}
+
+Further suppose that the true data generating process is as follows:
+
+$$
+y_i = \beta_0 + \beta_1 t_i + \beta_2 z_i + \varepsilon_i 
+$$
+
+If we omit $z$, then our regression is as follows:
+
+$$
+y_i = \beta_0^* + \beta_1^* t_i+ \varepsilon^*_i
+$$
+
+Finally, suppose that the association between $z$ and $t$ is defined in terms of a third regression:
+
+$$
+z_i = \gamma_0 + \gamma_1 t_i + u_i
+$$
+
+If we substitute this representation of $t$ into the original "true" regression and rearrange the terms, we the the following:
+
+$$
+y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta_1 + \beta_2 \gamma_1)}_{\beta_1^*} \ t_i + \underbrace{(\beta_2 u + \varepsilon)}_{\varepsilon^*}
+$$
+
+If there's no association between the treatment and the purported confounder ($\gamma_1 = 0$), *then there is no bias.*
+
+In `R`:
+
+```{r}
+N <- 1e3
+b0 <- 1 
+b1 <- 2  ## effect of t
+b2 <- 3
+g0 <- 2
+g1 <- 1  ## source of correlation between t and z
+
+d <- tibble::tibble(
+  z = runif(N, min = -50, max = 50),
+  t = rnorm(N, mean = (z - g0)/g1, sd = 1),
+  y = rnorm(N, mean = b0 + b1*t + b2*z, sd = 1)
+)
+
+mtrue <- lm(y ~ t + z, data = d)
+mconf <- lm(y ~ t, data = d)
+
+modelsummary::msummary(
+  models = list("True DGP" = mtrue, "Omitted Variable" = mconf), 
+  gof_map = NA
+)
+```
+
+Here, we see that $\beta_1 \approx 2$ and $\beta_1^* \approx 5$.
+
+## Balance and Overlap
+
+The sort of bias that we get from confounding can be interpreted more precisely as **imbalance** in the potential outcomes across treatment groups. This is the sort of imbalance is unlikely with *randomization*, but it's almost guaranteed in observational studies.
+
+There are different methods that attempt to address imbalance and lack of overlap: stratification, regression adjustments, matching, weighting, or a combination of these.
+
+### The Electric Company
+
+**Setting up a regression for causal inference**
+
+Going back to the Electric Company example, we can think of `supp`, whether teachers *chose* to replace or supplementing the regular reading program with the television show, as a different treatment.
+
+Given that this decision is not randomized, we cannot simply compare outcomes across the two new treatment groups. However, we can *assume* ignorability if we are willing to believe that `pre_test` is the only confounding variable---i.e., that the probability of assignment was determined by the average pre-test scores in that classroom. *This is a strong assumption*.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Setup"
+#| message: false
+#| warning: false
+
+library(tidyverse)
+
+theme_set(
+  theme_light(base_family = "Avenir Next Condensed") +
+  theme(strip.background = element_rect(fill = "#666666"))
+)
+
+url <- "https://raw.githubusercontent.com/avehtari/ROS-Examples/master/ElectricCompany/data/electric.csv"
+
+d <- read_csv(url)[, -1] |> 
+  mutate(across(grade:pair_id, as.integer)) |> 
+  filter(treatment == 1)
+```
+
+```{r}
+mod1 <- lm(post_test ~ supp, data = d)
+mod2 <- lm(post_test ~ supp + pre_test, data = d)
+mod3 <- lm(post_test ~ supp + pre_test + grade, data = d)
+
+modelsummary::msummary(
+  models = list(mod1, mod2, mod3), 
+  gof_map = NA
+)
+```
+
+```{r}
+#| code-fold: true
+#| label: fig-electric
+#| fig-cap: "Estimates, 50%, and 95% intervals for the effect of watching The Electric Company _as a supplement rather than a replacement_. The same model has been fitted separately for each grade."
+#| fig-subcap: 
+#|   - "Regression on non-random treatment indicator"
+#|   - "Regression on non-random treatment indicator and pre-test"
+#| layout-ncol: 2
+
+fit1 <- map_df(1:4, function(i) {
+  lm(formula = post_test ~ supp, 
+     data = d, 
+     subset = grade == i) |> 
+    broom::tidy(conf.int = TRUE) |> 
+    filter(term == "supp") |> 
+    mutate(grade = paste("Grade", i))
+})
+
+fit2 <- map_df(1:4, function(i) {
+  lm(formula = post_test ~ supp + pre_test, 
+     data = d, 
+     subset = grade == i) |> 
+    broom::tidy(conf.int = TRUE) |> 
+    filter(term == "supp") |> 
+    mutate(grade = paste("Grade", i))
+})
+
+fit1 |> 
+  ggplot(aes(estimate, grade)) + 
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_linerange(aes(
+    xmin = estimate + std.error*qnorm(0.05),
+    xmax = estimate + std.error*qnorm(0.95)), 
+  ) +
+  geom_linerange(aes(
+    xmin = estimate + std.error*qnorm(0.25),
+    xmax = estimate + std.error*qnorm(0.75)
+    ), linewidth = 1.5
+  ) +
+  geom_point(shape = 21, fill = "white") + 
+  labs(y = NULL, x = "supp",
+       title = "lm(post_treat ~ supp)")
+
+fit2 |> 
+  ggplot(aes(estimate, grade)) + 
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_linerange(aes(
+    xmin = estimate + std.error*qnorm(0.05),
+    xmax = estimate + std.error*qnorm(0.95)), 
+  ) +
+  geom_linerange(aes(
+    xmin = estimate + std.error*qnorm(0.25),
+    xmax = estimate + std.error*qnorm(0.75)
+    ), linewidth = 1.5
+  ) +
+  geom_point(shape = 21, fill = "white") + 
+  labs(y = NULL, x = "treatment",
+       title = "lm(post_treat ~ supp + pre_test)")
+```
+
+Temporal ordering @gelman2020 [pp. 414]

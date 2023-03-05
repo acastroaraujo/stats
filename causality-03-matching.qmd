@@ -14,7 +14,7 @@ Both **regression** and **matching/weighting** are strategies to close the backd
 
 The logic of exact matching is relatively straightforward, we want *apples to apples* comparisons.
 
-Instead of a simple independence assumption, we now rely on a **conditional independence assumption** (CIA).
+Instead of a simple independence assumption that we have for randomized experiments, we now have to rely on a **conditional independence assumption** (CIA), like in regression.
 
 $$
 \begin{align}
@@ -23,11 +23,7 @@ E\big[Y^0 \mid T=1, S \big] &= E\big[Y^0 \mid T=0, S \big]
 \end{align}
 $$ {#eq-cond-ind-assumption}
 
-<aside>
-
-*Ignorability*
-
-</aside>
+<aside>*Ignorability*</aside>
 
 The assumption in @eq-cond-ind-assumption means that we can observe counterfactuals, conditional on **pre-treatment** variables $S$. Unfortunately, we cannot test the conditional independence assumption directly.
 
@@ -36,6 +32,8 @@ Three overall assumptions:
 1.  **Ignorability** or selection on observables.
 2.  Overlap---any individual case has a non-zero probability of treatment.
 3.  Stable Unit Treatment Value Assumption (SUTVA)---i.e., no spillovers.
+
+SEE IF ABOVE SHOULD STILL BE HERE
 
 *Note. In cases when we have treatment effect heterogeneity, the ATT, ATU, and ATE estimates will be different, as exemplified in @tbl-t-eff-het.*
 
@@ -60,7 +58,7 @@ The procedure is relatively straightforward:
 
     -   ATT: weight differences by the distribution of $S$ for treated cases.
 
-For @tbl-t-eff-het:
+Thus, for @tbl-t-eff-het:
 
 $$
 \begin{align}
@@ -72,7 +70,7 @@ $$
 The ATT is usually our most common estimand because treatment cases tend to be less common than control cases. In some cases, like the one portrayed in @tbl-t-eff-het-2, we might not be able to calculate the ATE.
 
 |             SES              |               N                |            degree            |             earnings              |
-|:----------------:|:---------------:|:---------------:|:------------------:|
+|:----------------------------:|:------------------------------:|:----------------------------:|:---------------------------------:|
 | [1]{style="color: #C5C5C5;"} | [150]{style="color: #C5C5C5;"} | [0]{style="color: #C5C5C5;"} | [2,000]{style="color: #C5C5C5;"}  |
 |              1               |               0                |              1               |                 ?                 |
 | [2]{style="color: #C5C5C5;"} | [100]{style="color: #C5C5C5;"} | [0]{style="color: #C5C5C5;"} | [6,000]{style="color: #C5C5C5;"}  |
@@ -82,7 +80,7 @@ The ATT is usually our most common estimand because treatment cases tend to be l
 
 : Treatment Effect Heterogeneity (Modified Example) {#tbl-t-eff-het-2}
 
-But the ATT is just as easy to calculate as before:
+But the ATT is just as easy to calculate as before, for @tbl-t-eff-het-2:
 
 $$
 \text{ATT} = \frac{(?)(0) + 2000(100) + 4000(150)}{0 + 100 + 150} = 3,200

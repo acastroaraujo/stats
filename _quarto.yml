@@ -13,10 +13,11 @@ book:
       chapters:
         - std-errors.qmd
         - marginal-effects.qmd
-    - part: 00-causality.qmd
+    - part: causality-00-intro.qmd
       chapters:
-        - 01-causality-regression.qmd
-        - 02-matching.qmd
+        - causality-01-experiments.qmd
+        - causality-02-regression.qmd
+        - causality-03-matching.qmd
     - references.qmd
 
 bibliography: references.bib
@@ -27,6 +28,8 @@ format:
     mainfont: Amiri
     monofont: Fira Code
     fontsize: 1em
+
+fig-align: center
 
 editor: visual
 

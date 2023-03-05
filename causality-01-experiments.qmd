@@ -1,0 +1,362 @@
+# Experiments
+
+## Notation
+
+Experiments work because they make the distribution of potential outcomes the same across levels of the treatment variable. In other words, the potential outcomes and the treatment indicator are *independent.*
+
+$$
+Y^0, Y^1 \perp T
+$$
+
+<aside>*Ignorability*</aside>
+
+Thus, in expectation:
+
+$$
+\begin{align}
+E[Y^0 \mid T = 0] &= E[Y^0 \mid T = 1], \\\\
+E[Y^1 \mid T = 0] &= E[Y^1 \mid T = 1]
+\end{align}
+$$
+
+<aside>
+
+*...ignorability implies that the value of someone's potential outcomes does not provide any information about his or her treatment group assignment".*
+
+@gelman2020 [*pp. 350-1*]
+
+</aside>
+
+Which means that we can easily estimate the *average causal effect* of $T$ over all units in a population:
+
+$$
+\text{ATE} = \underbrace{E[Y^1 - Y^0] = E[Y^1] - E[Y^0]}_\text{by linearity of expectations}
+$$
+
+In the absence of randomization, so that treatment and control groups differ on pre-treatment characteristics, we might observe the following biases:
+
+-   **Baseline bias**. The two groups might be different from each other whether they get treated or not.
+
+-   **Treatment effect heterogeneity.** The two groups might respond differently to the treatment.
+
+    This is important because researchers sometimes assume a **constant effect** for every unit in the population. This is implied in the unit homogeneity assumption. But if the variability of causal effects is large across the population, then the ATE might not represent the causal effect of a specific unit very well; the ATE might be irrelevant, no matter how carefully we estimate it.
+
+Three types of treatment effects:
+
+-   $\text{ATE}$, for all units (effect of switching)
+
+-   $\text{ATT}$, for treated units (effect of taking away treatment)
+
+-   $\text{ATC}$ or $\text{ATU}$, for untreated units (effect of adding treatment)
+
+<aside>Some times we see these terms pre-fixed with an $S$ (for sample) or a $P$ (for population).</aside>
+
+@tbl-pot-example allows us to gain further intuition on these calculations with a hypothetical example in which people are assigned college degrees randomly.
+
+| Group ($T$)              | $E[Y^1]$ | $E[Y^0]$ |
+|--------------------------|----------|----------|
+| College Degree ($T = 1$) | **1000** | 600^\*^  |
+| No Degree ($T = 0$)      | 800^\*^  | **500**  |
+
+: Potential Outcomes Example {#tbl-pot-example}
+
+<aside>
+
+<br>
+
+Simple experiments of these kind are obviously impossible in the social sciences.
+
+\* means unobservable
+
+</aside>
+
+If **30%** of the population has a degree...
+
+::: grid
+::: g-col-6
+-   What is the naive estimate?
+
+    [500]{style="color: #C5C5C5;"}
+
+-   What is the ATT?
+
+    [400]{style="color: #C5C5C5;"}
+:::
+
+::: g-col-6
+-   What is the ATC?
+
+    [300]{style="color: #C5C5C5;"}
+
+-   What is the ATE?
+
+    [$0.3\times 400 + 0.7 \times 300 = 330$]{style="color: #C5C5C5;"}
+:::
+:::
+
+**More than two treatment levels, continuous treatments, and multiple treatment factors**
+
+Multiple treatment effects can be defined relative to a baseline level, following the general principles of regression modeling with indicator (or dummy) variables.
+
+Treatment levels can be continuous.
+
+> To conceptualize randomization with a continuous treatment, think of spinning a spinner that can land on any of the potential levels of the treatment assignment. As with regression inputs in general, it can make sense to fit more complicated models as suggested by theory or supported by data. A linear model---which estimates the average effect on $y$ for each additional unit of $z$---is a natural starting point for effects that are believed to be monotonically increasing or decreasing functions of the treatment level.
+>
+> @gelman2020 [pp. 342]
+
+Finally, we can also consider multiple simultaneous treatments.
+
+> ...multiple treatments can be administered in combination. For instance, depressed individuals could be randomly assigned to receive nothing, drugs, counseling sessions, or both drugs and counseling sessions. These combinations could be modeled as two treatments and their interaction or as four distinct treatments.
+>
+> @gelman2020 [pp. 342]
+
+**Using design and analysis to address imbalance and lack of overlap between treatment and control groups**
+
+Regression can be useful even in the context of randomized experiments.
+
+> In practice, we can never ensure that treatment and control groups are balanced on all relevant pre-treatment characteristics. However, there are statistical approaches that may bring us closer. At the design stage, we can use *randomization* to ensure that treatment and control groups are balanced in expectation, and we can use *blocking* to reduce the variation in any imbalance. At the analysis stage, we can *adjust* for pre-treatment variables to correct for differences between the two groups to reduce bias in our estimate of the sample average treatment effect. We can further adjust for differences between sample and population if our goal is to estimate the population average treatment effect.
+>
+> @gelman2020 [pp. 344]
+
+We can increase the precision of treatment effect estimates by adjusting for pre-treatment variables that are predictive of the outcome---i.e., we get lower standard errors on the treatment parameter.
+
+**Group or cluster-randomized experiments**
+
+Sometimes it's difficult to randomize treatment assignments to individual units, and so we might randomize groups or clusters to receive the treatment instead.
+
+> A decision to assign treatments at the group level can be driven by cost or logistical concerns. It might be more cost effective to provide free flu shots to a random subset of health clinics, for example, than to have professionals go to every clinic and then randomly assign individuals to receive shots. Assignment at the clinic level would also avoid creating ill will among potential study participants being deprived of a service that others in the same location are able to receive. Cluster-randomized experiments are also used to avoid spillover or contagion effects (which can also be considered as violations of the stable unit treatment value assumption or SUTVA).
+>
+> @gelman2020 [pp. 349-50]
+
+## SUTVA
+
+Besides **ignorability** (see @eq-ignore), randomization implies certain other properties which we might consider to be **assumptions**.
+
+The most important one is the **stable unit treatment value assumption** (SUTVA). It means that we assume that there is no interference among units (i.e., no spillovers) and no hidden versions of the treatment.
+
+Thus, one can imagine person $i$'s outcome to be "a function not only of her own treatment assignment, but also the treatment assignments of others in the sample" [@gelman2020, pp. 353]. These becomes intractable very quickly. For example, in a sample of just 10 people and a binary treatment, we would have 2^10^ = 1024 potential outcomes for each person. Thus, researchers often hope that there is no interference among units, or else they think about modeling spillover in some way.
+
+SUTVA also implies that there are no hidden versions of treatments---i.e., we want $t_i$ to equal $t_j$.
+
+> Examples of potential SUTVA violations abound. An experiment testing the effect of a new fertilizer by randomly assigning adjacent plots to treatment or control is a classic example. Fertilizer from one plot might leach into an adjacent plot assigned to receive no fertilizer and thus affect the yield in that control plot. Vaccines that reduce the probability of a contagious disease within a school, business, or community could easily lead to violation of SUTVA if the vaccine is actually effective. Consider an experiment that recruited families from the same public housing complex and randomized them to receive a voucher to move to a better neighborhood or not. This could suffer from interference if a given family moving might influence (positively or negatively) the well-being of another family that happened to be randomized to not receive the voucher.
+>
+> @gelman2020 [pp. 353]
+
+In educational settings, potential SUTVA violations are often a reason to assign treatments at the classroom or school level.
+
+## Extra
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+theme_set(
+  theme_light(base_family = "Avenir Next Condensed") +
+  theme(strip.background = element_rect(fill = "#666666"))
+)
+```
+
+### Average Treatment Effects
+
+> 18.4 The table below describes a hypothetical experiment on 8 people. Each row of the table gives a participant and her pre-treatment predictor $x$, treatment indicator $z$, and potential outcomes $y^0$ and $y^1$.
+
+```{r}
+#| code-fold: true
+
+d <- data.frame(
+  X = c(3, 5, 2, 8, 5, 10, 2, 11),
+  Z = c(0, 0, 1, 0, 0, 1, 1, 1),
+  Y0 = c(5, 8, 5, 12, 4, 8, 4, 9),
+  Y1 = c(5, 10, 3, 13, 2, 9, 1, 13), 
+  row.names = LETTERS[1:8]
+)
+
+d <- d |> 
+  mutate(Y = ifelse(Z == 0, Y0, Y1))
+
+knitr::kable(d)
+```
+
+Naive estimate:
+
+```{r}
+i <- as.logical(d$Z)
+
+## Naive Estimate: 
+mean(d$Y1[i] - d$Y0[!i])
+## ATT:
+mean(d$Y1[i] - d$Y0[i])
+## ATE:
+mean(d$Y1 - d$Y0)
+```
+
+> Simulate a new completely randomized experiment on these 8 people; that is, resample $z$ at random with the constraint that equal numbers get the treatment and the control.
+
+```{r}
+j <- sample(i)
+
+## Naive Estimate: 
+mean(d$Y1[j] - d$Y0[!j])
+## ATT:
+mean(d$Y1[j] - d$Y0[j])
+## ATE:
+mean(d$Y1 - d$Y0)
+```
+
+Again:
+
+```{r}
+k <- sample(i)
+
+## Naive Estimate: 
+mean(d$Y1[k] - d$Y0[!k])
+## ATT:
+mean(d$Y1[k] - d$Y0[k])
+## ATE:
+mean(d$Y1 - d$Y0)
+```
+
+### The Electric Company
+
+**Add description of dataset. This is a randomized experiment.**
+
+![](images/electric-company.png){fig-align="center" width="90%"}
+
+```{r}
+#| code-fold: true
+#| message: false
+#| warning: false
+
+url <- "https://raw.githubusercontent.com/avehtari/ROS-Examples/master/ElectricCompany/data/electric.csv"
+
+d <- read_csv(url)[, -1] |> 
+  mutate(across(grade:pair_id, as.integer))
+
+glimpse(d)
+```
+
+The `supp` variable indicates a subtlety in the experiment---i.e., every teacher had the choice of *replacing* or *supplementing* the regular reading program with the television show. Thus, this experiment really estimated *the effect of making the program available.*
+
+<aside>The notebook on regression adjustments and causal inference revisits the `supp` variable as a different treatment on its own.</aside>
+
+```{r}
+#| code-fold: true
+#| message: false
+#| warning: false
+#| fig-height: 3
+#| fig-width: 5
+#| fig-align: center
+
+d |> 
+  mutate(
+    grade = paste("Grade", grade),
+    t = ifelse(treatment == 1, "Treatment", "Control")) |> 
+  ggplot(aes(post_test, y = grade, color = t)) + 
+  stat_summary(size = 1/8, fun.args = list(mult = 2), position = position_dodge(1/3)) +
+  labs(y = NULL, color = NULL) + 
+  theme(legend.position = "top")
+```
+
+The point of this exercise is to demonstrate that it's *almost* always a good idea to include pre-treatment information when analyzing experimental data.
+
+> Under a clean randomization, adjusting for pre-treatment predictors in this way does not change what we are estimating. However, if the predictor has a strong association with the outcome it can help to bring each estimate closer (on average) to the truth, and if the randomization was less than pristine, the addition of predictors to the equation may help us adjust for *systematically* unbalanced characteristics across groups. Thus, this strategy has the potential to adjust for both random and systematic differences between the treatment and control groups (that is, to reduce both variance and bias), as long as these differences are characterized by differences in the pre-test.
+>
+> @gelman2020 [pp. 368]
+
+Just look at the change in coefficient and standard error estimates:
+
+```{r}
+mod1 <- lm(post_test ~ treatment, data = d)
+mod2 <- lm(post_test ~ treatment + pre_test, data = d)
+mod3 <- lm(post_test ~ treatment + pre_test + grade, data = d)
+
+modelsummary::msummary(
+  models = list(mod1, mod2, mod3), 
+  gof_map = NA
+)
+
+```
+
+And here's a separate model for each grade:
+
+```{r}
+#| code-fold: true
+#| label: fig-electric
+#| fig-cap: "Estimates, 50%, and 95% intervals for the effect of watching The Electric Company. The same model has been fitted separately for each grade."
+#| fig-subcap: 
+#|   - "Regression on treatment indicator"
+#|   - "Regression on treatment indicator and pre-test"
+#| layout-ncol: 2
+
+fit1 <- map_df(1:4, function(i) {
+  lm(formula = post_test ~ treatment, 
+     data = d, 
+     subset = grade == i) |> 
+    broom::tidy(conf.int = TRUE) |> 
+    filter(term == "treatment") |> 
+    mutate(grade = paste("Grade", i))
+})
+
+fit2 <- map_df(1:4, function(i) {
+  lm(formula = post_test ~ treatment + pre_test, 
+     data = d, 
+     subset = grade == i) |> 
+    broom::tidy(conf.int = TRUE) |> 
+    filter(term == "treatment") |> 
+    mutate(grade = paste("Grade", i))
+})
+
+fit1 |> 
+  ggplot(aes(estimate, grade)) + 
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_linerange(aes(
+    xmin = estimate + std.error*qnorm(0.05),
+    xmax = estimate + std.error*qnorm(0.95)), 
+  ) +
+  geom_linerange(aes(
+    xmin = estimate + std.error*qnorm(0.25),
+    xmax = estimate + std.error*qnorm(0.75)
+    ), linewidth = 1.5
+  ) +
+  geom_point(shape = 21, fill = "white") + 
+  labs(y = NULL, x = "treatment",
+       title = "lm(post_treat ~ treatment)")
+
+fit2 |> 
+  ggplot(aes(estimate, grade)) + 
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_linerange(aes(
+    xmin = estimate + std.error*qnorm(0.05),
+    xmax = estimate + std.error*qnorm(0.95)), 
+  ) +
+  geom_linerange(aes(
+    xmin = estimate + std.error*qnorm(0.25),
+    xmax = estimate + std.error*qnorm(0.75)
+    ), linewidth = 1.5
+  ) +
+  geom_point(shape = 21, fill = "white") + 
+  labs(y = NULL, x = "treatment",
+       title = "lm(post_treat ~ treatment + pre_test)")
+```
+
+So, adding pre-treatment information will always make for more precise and less biased estimates. But don't adjust for post-treatment variables. In fact, always draw a DAG.
+
+Adjusting for a post-treatment variable $q$ breaks down the assumption of ignorability.
+
+$$
+Y^0, Y^1 \not \perp T \mid q
+$$
+
+## Additional Resources
+
+Experiments
+
+:   @druckman2022, @gerber2012
+
+Interference Among Units
+
+:   @rosenbaum2007, @hudgens2008, @aronow2017.
+
+Placebo effects
+
+:   @meissner2011, @beecher1955
