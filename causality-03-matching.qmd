@@ -12,9 +12,15 @@ Both **regression** and **matching/weighting** are strategies to close the backd
 
 ## Exact Matching
 
-The logic of exact matching is relatively straightforward, we want *apples to apples* comparisons.
+The logic of exact matching is relatively straightforward, we want *apples to apples* comparisons. This is the same logic behind regression adjustements.
 
-Instead of a simple independence assumption that we have for randomized experiments, we now have to rely on a **conditional independence assumption** (CIA), like in regression.
+Instead of a simple independence assumption that we have for randomized experiments, we now have to rely on a **conditional independence assumption** (CIA).
+
+$$
+Y^0, Y^1 \perp T \mid S
+$$
+
+Thus, in expectation:
 
 $$
 \begin{align}
@@ -23,7 +29,7 @@ E\big[Y^0 \mid T=1, S \big] &= E\big[Y^0 \mid T=0, S \big]
 \end{align}
 $$ {#eq-cond-ind-assumption}
 
-<aside>*Ignorability*</aside>
+<aside>Conditional *Ignorability*</aside>
 
 The assumption in @eq-cond-ind-assumption means that we can observe counterfactuals, conditional on **pre-treatment** variables $S$. Unfortunately, we cannot test the conditional independence assumption directly.
 
@@ -70,7 +76,7 @@ $$
 The ATT is usually our most common estimand because treatment cases tend to be less common than control cases. In some cases, like the one portrayed in @tbl-t-eff-het-2, we might not be able to calculate the ATE.
 
 |             SES              |               N                |            degree            |             earnings              |
-|:----------------------------:|:------------------------------:|:----------------------------:|:---------------------------------:|
+|:----------------:|:----------------:|:----------------:|:-----------------:|
 | [1]{style="color: #C5C5C5;"} | [150]{style="color: #C5C5C5;"} | [0]{style="color: #C5C5C5;"} | [2,000]{style="color: #C5C5C5;"}  |
 |              1               |               0                |              1               |                 ?                 |
 | [2]{style="color: #C5C5C5;"} | [100]{style="color: #C5C5C5;"} | [0]{style="color: #C5C5C5;"} | [6,000]{style="color: #C5C5C5;"}  |

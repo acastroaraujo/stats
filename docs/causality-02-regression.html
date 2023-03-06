@@ -248,10 +248,15 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#translating-dags" id="toc-translating-dags" class="nav-link active" data-scroll-target="#translating-dags"><span class="toc-section-number">5.1</span>  Translating DAGs</a></li>
-  <li><a href="#balance-and-overlap" id="toc-balance-and-overlap" class="nav-link" data-scroll-target="#balance-and-overlap"><span class="toc-section-number">5.2</span>  Balance and Overlap</a>
+  <li><a href="#translating-dags" id="toc-translating-dags" class="nav-link active" data-scroll-target="#translating-dags"><span class="toc-section-number">5.1</span>  Translating DAGs</a>
   <ul class="collapse">
-  <li><a href="#the-electric-company" id="toc-the-electric-company" class="nav-link" data-scroll-target="#the-electric-company"><span class="toc-section-number">5.2.1</span>  The Electric Company</a></li>
+  <li><a href="#the-electric-company" id="toc-the-electric-company" class="nav-link" data-scroll-target="#the-electric-company"><span class="toc-section-number">5.1.1</span>  The Electric Company</a></li>
+  </ul></li>
+  <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation"><span class="toc-section-number">5.2</span>  Notation</a></li>
+  <li><a href="#balance-and-overlap" id="toc-balance-and-overlap" class="nav-link" data-scroll-target="#balance-and-overlap"><span class="toc-section-number">5.3</span>  Balance and Overlap</a>
+  <ul class="collapse">
+  <li><a href="#imbalance" id="toc-imbalance" class="nav-link" data-scroll-target="#imbalance"><span class="toc-section-number">5.3.1</span>  Imbalance</a></li>
+  <li><a href="#lack-of-complete-overlap" id="toc-lack-of-complete-overlap" class="nav-link" data-scroll-target="#lack-of-complete-overlap"><span class="toc-section-number">5.3.2</span>  Lack of Complete Overlap</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -280,17 +285,14 @@ div.csl-indent {
 <p>In the usual context of regression, predictive inference relates to comparisons <em>between</em> units. In the context of causal inference, we attempt to make comparisons of different treatments <em>as if applied to the same units.</em></p>
 <p>In order to make causal interpretations of regression coefficients we rely very strong assumptions.</p>
 <p>In short, causal effects can be estimated with regression if the model includes all confounding variables <em>and</em> if the model is correct.</p>
-<section id="translating-dags" class="level2 page-columns page-full" data-number="5.1">
+<section id="translating-dags" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="translating-dags"><span class="header-section-number">5.1</span> Translating DAGs</h2>
 <div id="fig-reg-chart" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="images/reg-chart.png" class="img-fluid figure-img" style="width:70.0%"></p>
-<p></p><figcaption class="figure-caption">Figure&nbsp;5.1: Flow Chart For Constructing Regression Equations</figcaption><p></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.1: Flow Chart For Constructing Regression Equations <span class="citation" data-cites="huntington-klein2021">(<a href="references.html#ref-huntington-klein2021" role="doc-biblioref">Huntington-Klein 2021, 199</a>)</span></figcaption><p></p>
 </figure>
 </div>
-<aside>
-<span class="citation" data-cites="huntington-klein2021">Huntington-Klein (<a href="references.html#ref-huntington-klein2021" role="doc-biblioref">2021, 199</a>)</span>
-</aside>
 <p>Suppose our causal diagram is as follows:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -349,18 +351,18 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <tbody>
   <tr>
    <td style="text-align:left;"> (Intercept) </td>
-   <td style="text-align:center;"> 0.918 </td>
-   <td style="text-align:center;"> 6.905 </td>
+   <td style="text-align:center;"> 1.028 </td>
+   <td style="text-align:center;"> 6.921 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.071) </td>
-   <td style="text-align:center;"> (0.102) </td>
+   <td style="text-align:center;"> (0.070) </td>
+   <td style="text-align:center;"> (0.098) </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t </td>
-   <td style="text-align:center;"> 1.968 </td>
-   <td style="text-align:center;"> 4.996 </td>
+   <td style="text-align:center;"> 2.017 </td>
+   <td style="text-align:center;"> 5.002 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
@@ -369,7 +371,7 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
   </tr>
   <tr>
    <td style="text-align:left;"> z </td>
-   <td style="text-align:center;"> 3.033 </td>
+   <td style="text-align:center;"> 2.985 </td>
    <td style="text-align:center;">  </td>
   </tr>
   <tr>
@@ -383,16 +385,11 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 </div>
 </div>
 <p>Here, we see that <span class="math inline">\(\beta_1 \approx 2\)</span> and <span class="math inline">\(\beta_1^* \approx 5\)</span>.</p>
-</section>
-<section id="balance-and-overlap" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="balance-and-overlap"><span class="header-section-number">5.2</span> Balance and Overlap</h2>
-<p>The sort of bias that we get from confounding can be interpreted more precisely as <strong>imbalance</strong> in the potential outcomes across treatment groups. This is the sort of imbalance is unlikely with <em>randomization</em>, but it’s almost guaranteed in observational studies.</p>
-<p>There are different methods that attempt to address imbalance and lack of overlap: stratification, regression adjustments, matching, weighting, or a combination of these.</p>
-<section id="the-electric-company" class="level3" data-number="5.2.1">
-<h3 data-number="5.2.1" class="anchored" data-anchor-id="the-electric-company"><span class="header-section-number">5.2.1</span> The Electric Company</h3>
+<section id="the-electric-company" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="the-electric-company"><span class="header-section-number">5.1.1</span> The Electric Company</h3>
 <p><strong>Setting up a regression for causal inference</strong></p>
 <p>Going back to the Electric Company example, we can think of <code>supp</code>, whether teachers <em>chose</em> to replace or supplementing the regular reading program with the television show, as a different treatment.</p>
-<p>Given that this decision is not randomized, we cannot simply compare outcomes across the two new treatment groups. However, we can <em>assume</em> ignorability if we are willing to believe that <code>pre_test</code> is the only confounding variable—i.e., that the probability of assignment was determined by the average pre-test scores in that classroom. <em>This is a strong assumption</em>.</p>
+<p>Given that this decision is not randomized, we cannot simply compare outcomes across the two new treatment groups. However, we can <em>assume</em> ignorability if we are willing to believe that <code>pre_test</code> is the only confounding variable—i.e., that the probability of assignment was determined by the average pre-test scores in that classroom. <em>This is a strong assumption, it requires a leap of faith.</em></p>
 <div class="cell">
 <details>
 <summary>Setup</summary>
@@ -410,15 +407,17 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(treatment <span class="sc">==</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
+<p>Just look at the change in coefficient and standard error estimates:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(post_test <span class="sc">~</span> supp, <span class="at">data =</span> d)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(post_test <span class="sc">~</span> supp <span class="sc">+</span> pre_test, <span class="at">data =</span> d)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(post_test <span class="sc">~</span> supp <span class="sc">+</span> pre_test <span class="sc">+</span> grade, <span class="at">data =</span> d)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>modelsummary<span class="sc">::</span><span class="fu">msummary</span>(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">list</span>(mod1, mod2, mod3), </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="cn">NA</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(post_test <span class="sc">~</span> supp <span class="sc">+</span> pre_test <span class="sc">+</span> grade, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> <span class="fu">mutate</span>(d, <span class="at">grade =</span> <span class="fu">factor</span>(grade)))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>modelsummary<span class="sc">::</span><span class="fu">msummary</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">list</span>(mod1, mod2, mod3), </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="cn">NA</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -435,55 +434,81 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
    <td style="text-align:left;"> (Intercept) </td>
    <td style="text-align:center;"> 98.189 </td>
    <td style="text-align:center;"> 66.758 </td>
-   <td style="text-align:center;"> 68.223 </td>
+   <td style="text-align:center;"> 61.964 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
    <td style="text-align:center;"> (2.830) </td>
    <td style="text-align:center;"> (2.377) </td>
-   <td style="text-align:center;"> (2.433) </td>
+   <td style="text-align:center;"> (2.467) </td>
   </tr>
   <tr>
    <td style="text-align:left;"> supp </td>
    <td style="text-align:center;"> 2.816 </td>
    <td style="text-align:center;"> 3.468 </td>
-   <td style="text-align:center;"> 3.451 </td>
+   <td style="text-align:center;"> 3.589 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
    <td style="text-align:center;"> (3.550) </td>
    <td style="text-align:center;"> (1.796) </td>
-   <td style="text-align:center;"> (1.763) </td>
+   <td style="text-align:center;"> (1.658) </td>
   </tr>
   <tr>
    <td style="text-align:left;"> pre_test </td>
    <td style="text-align:center;">  </td>
    <td style="text-align:center;"> 0.424 </td>
-   <td style="text-align:center;"> 0.526 </td>
+   <td style="text-align:center;"> 0.820 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
    <td style="text-align:center;">  </td>
    <td style="text-align:center;"> (0.026) </td>
-   <td style="text-align:center;"> (0.054) </td>
+   <td style="text-align:center;"> (0.093) </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> grade </td>
+   <td style="text-align:left;"> grade2 </td>
    <td style="text-align:center;">  </td>
    <td style="text-align:center;">  </td>
-   <td style="text-align:center;"> −3.698 </td>
+   <td style="text-align:center;"> −24.741 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
    <td style="text-align:center;">  </td>
    <td style="text-align:center;">  </td>
-   <td style="text-align:center;"> (1.740) </td>
+   <td style="text-align:center;"> (5.992) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> grade3 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> −34.816 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (7.613) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> grade4 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> −37.935 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (8.832) </td>
   </tr>
 </tbody>
 </table>
 
 </div>
 </div>
+<p><em>Note. The grade coefficients are increasingly negative because they are positively correlated with pre-test scores. Remember, <strong>we cannot interpret confounders causally</strong><span class="citation" data-cites="westreich2013">(see <a href="references.html#ref-westreich2013" role="doc-biblioref">Westreich and Greenland 2013</a>)</span>.</em></p>
+<p>And here’s a separate model for each grade:</p>
 <div>
 <details>
 <summary>Code</summary>
@@ -491,7 +516,7 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(<span class="at">formula =</span> post_test <span class="sc">~</span> supp, </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">data =</span> d, </span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">subset =</span> grade <span class="sc">==</span> i) <span class="sc">|&gt;</span> </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"supp"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">grade =</span> <span class="fu">paste</span>(<span class="st">"Grade"</span>, i))</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>})</span>
@@ -500,7 +525,7 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(<span class="at">formula =</span> post_test <span class="sc">~</span> supp <span class="sc">+</span> pre_test, </span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">data =</span> d, </span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">subset =</span> grade <span class="sc">==</span> i) <span class="sc">|&gt;</span> </span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">|&gt;</span> </span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"supp"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">grade =</span> <span class="fu">paste</span>(<span class="st">"Grade"</span>, i))</span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>})</span>
@@ -518,7 +543,7 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    ), <span class="at">linewidth =</span> <span class="fl">1.5</span></span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, <span class="at">fill =</span> <span class="st">"white"</span>) <span class="sc">+</span> </span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">x =</span> <span class="st">"supp"</span>,</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">x =</span> <span class="st">"treatment"</span>,</span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"lm(post_treat ~ supp)"</span>)</span>
 <span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>fit2 <span class="sc">|&gt;</span> </span>
@@ -543,7 +568,7 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
 <div id="fig-electric-1" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="causality-02-regression_files/figure-html/fig-electric-1.png" class="img-fluid figure-img" data-ref-parent="fig-electric" width="672"></p>
+<p><img src="causality-02-regression_files/figure-html/fig-electric-1.png" class="img-fluid figure-img" data-ref-parent="fig-electric" width="384"></p>
 <p></p><figcaption class="figure-caption">(a) Regression on non-random treatment indicator</figcaption><p></p>
 </figure>
 </div>
@@ -551,13 +576,293 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
 <div id="fig-electric-2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="causality-02-regression_files/figure-html/fig-electric-2.png" class="img-fluid figure-img" data-ref-parent="fig-electric" width="672"></p>
+<p><img src="causality-02-regression_files/figure-html/fig-electric-2.png" class="img-fluid figure-img" data-ref-parent="fig-electric" width="384"></p>
 <p></p><figcaption class="figure-caption">(b) Regression on non-random treatment indicator and pre-test</figcaption><p></p>
 </figure>
 </div>
 </div>
 </div>
 <p></p><figcaption class="figure-caption">Figure&nbsp;5.2: Estimates, 50%, and 95% intervals for the effect of watching The Electric Company <em>as a supplement rather than a replacement</em>. The same model has been fitted separately for each grade.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</section>
+</section>
+<section id="notation" class="level2 page-columns page-full" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="notation"><span class="header-section-number">5.2</span> Notation</h2>
+<p>The logic of regression adjustments is relatively straightforward, we want <em>apples to apples</em> comparisons. This is the same logic behind matching and weighting.</p>
+<p>Instead of a simple independence assumption that we have for randomized experiments, we now have to rely on a <strong>conditional</strong> ignorability. Just like in the case of experiments, we want distribution of potential outcomes the same across levels of the treatment variable. In other words, the potential outcomes and the treatment indicator <em>should</em> be independent, conditional on the covariates <span class="math inline">\(\boldsymbol{X}\)</span> used in the analysis.</p>
+<aside>
+<em>Ignorability, Conditional Independence Assumption (CIA), or Selection on Observables</em>
+</aside>
+<p><span id="eq-cond-ind"><span class="math display">\[
+Y^0, Y^1 \perp T \mid \boldsymbol X
+\tag{5.1}\]</span></span></p>
+<p>Thus, in expectation:</p>
+<p><span id="eq-cond-ind-2"><span class="math display">\[
+\begin{align}
+E\big[Y^1 \mid T=1, \boldsymbol{X} \big] &amp;= E\big[Y^1 \mid T=0, \boldsymbol{X} \big] \\
+E\big[Y^0 \mid T=1, \boldsymbol{X} \big] &amp;= E\big[Y^0 \mid T=0, \boldsymbol{X} \big]
+\end{align}
+\tag{5.2}\]</span></span></p>
+<p>These conditional quantities can be used to construct the marginal effects needed to construct the <em>average treatment effect.</em></p>
+<p><span id="eq-iterated-ate"><span class="math display">\[
+\text{ATE} = E[Y^1 - Y^0] = \underbrace{E\Big[E[Y^1 \mid \boldsymbol{X}] \Big] - E \Big[E[Y^0 \mid \boldsymbol{X}] \Big] = E[Y^1] - E[Y^0]}_\text{Law of Iterated Expectations}
+\tag{5.3}\]</span></span></p>
+<p>This strategy will get more complicated as the vector <span class="math inline">\(\boldsymbol X\)</span> grows in size.</p>
+<blockquote class="blockquote">
+<p>Once the number and type of confounders gets more complicated, perhaps the simplest parametric model that we can fit to estimate these expectations is linear regression. For instance, if we assume that the treatment effect, <span class="math inline">\(\tau\)</span>, is constant (or at least additive) we might posit that <span class="math inline">\(E( Y^Z \mid \boldsymbol X) = \beta_0+ \boldsymbol{X \beta}+ \tau Z\)</span> . If ignorability is satisfied and this model holds, we simply need to regress the outcome on the treatment indicator and confounders. The estimated coefficient on <span class="math inline">\(Z\)</span> from this fit, <span class="math inline">\(\hat \tau\)</span>, can be conceptualized as a weighted version of all of the conditional effect estimates. However, fitting a model to estimate these quantities is not without potential weaknesses. The two most obvious concerns are imbalance and lack of complete overlap…</p>
+<p><span class="citation" data-cites="gelman2020">Gelman, Hill, and Vehtari (<a href="references.html#ref-gelman2020" role="doc-biblioref">2020, 390</a>)</span></p>
+</blockquote>
+<p><em>Note. This sometimes shows up in econometrics as the <strong>exogeneity assumption</strong></em>.</p>
+</section>
+<section id="balance-and-overlap" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="balance-and-overlap"><span class="header-section-number">5.3</span> Balance and Overlap</h2>
+<p>The sort of bias that we get from confounding can be interpreted more precisely as <strong>imbalance</strong> in the potential outcomes across treatment groups. This is the sort of imbalance is unlikely with <em>randomization</em>, but it’s almost guaranteed in observational studies.</p>
+<p>There are different methods that attempt to address imbalance and lack of overlap: stratification, regression adjustments, matching, weighting, or a combination of these.</p>
+<blockquote class="blockquote">
+<p>Imbalance and lack of complete overlap are issues for causal inference even if ignorability holds because they force us to rely more heavily on model specification and less on direct support from the data.</p>
+<p><span class="citation" data-cites="gelman2020">Gelman, Hill, and Vehtari (<a href="references.html#ref-gelman2020" role="doc-biblioref">2020, 391</a>)</span></p>
+</blockquote>
+<section id="imbalance" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="imbalance"><span class="header-section-number">5.3.1</span> Imbalance</h3>
+<p>Imbalance occurs if the distributions of confounders differ for the treatment and control groups. <a href="#fig-imbalance">Figure&nbsp;<span>5.3</span></a> shows two examples of imbalance with respect to a single covariate <span class="math inline">\(x\)</span>. The problem with imbalance is that it forces us to rely more heavily on model specification and less on direct support from the data. This is true even if ignorability holds.</p>
+<div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dbeta</span>(x, <span class="dv">5</span>, <span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dbeta</span>(x, <span class="dv">2</span>, <span class="dv">5</span>), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.6</span>), <span class="at">linetype =</span> <span class="st">"dotted"</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_family =</span> <span class="st">"Avenir Next Condensed"</span>, <span class="at">base_line_size =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>()) </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dbeta</span>(x, <span class="dv">3</span>, <span class="fl">2.2</span>), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dbeta</span>(x, <span class="fl">2.2</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">0.5</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>) <span class="sc">+</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_family =</span> <span class="st">"Avenir Next Condensed"</span>, <span class="at">base_line_size =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-imbalance" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-imbalance-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-imbalance-1.png" class="img-fluid figure-img" data-ref-parent="fig-imbalance" width="384"></p>
+<p></p><figcaption class="figure-caption">(a) The groups differ in their averages but cover the same range of <span class="math inline">\(x\)</span></figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-imbalance-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-imbalance-2.png" class="img-fluid figure-img" data-ref-parent="fig-imbalance" width="384"></p>
+<p></p><figcaption class="figure-caption">(b) A more subtle form of imbalance, the groups have the same average but different distributions</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.3: Imbalance in distributions across treatment and control groups</figcaption><p></p>
+</figure>
+</div>
+</div>
+<p>Consider what happens if we try to make inferences about the effect of a treatment <span class="math inline">\(\theta\)</span> on <span class="math inline">\(y\)</span>, while adjusting for <span class="math inline">\(x\)</span>.</p>
+<p><span class="math display">\[
+\begin{align}
+\text{treated:}  &amp;&amp;y_i &amp;= \beta_0 + \theta + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i \\ \\
+\text{control:} &amp;&amp;y_i &amp;= \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i
+\end{align}
+\]</span></p>
+<p>Averaging over each group separately, solving the second equation for <span class="math inline">\(\beta_0\)</span>, and then plugging that into the first equation to solve for <span class="math inline">\(\theta\)</span> yields the following equation:</p>
+<p><span id="eq-reg-adjust"><span class="math display">\[
+\theta = (\overline y_t - \overline y_c) - \underbrace{\beta_1 (\overline x_t - \overline x_c) - \beta_2 (\overline {x^2_t} - \overline {x^2_c})}_\text{adjustment}
+\tag{5.4}\]</span></span></p>
+<p>This is why it’s so important to get the model specification right. For example, notice that if we don’t include the quadratic term in the linear model, the estimate of <span class="math inline">\(\theta\)</span> will be off by <span class="math inline">\(\beta_2 (\overline {x^2_t} - \overline {x^2_c})\)</span>.</p>
+<p>More importantly, if the distribution of covariates is similar across treatment groups, then the model specification matters less—i.e., if there is balance, then <span class="math inline">\(\overline x_t - \overline x_c\)</span> is closer to zero. This is why methods that match or weight to create balance may help to create some immunity from failure to correctly specify the model.</p>
+</section>
+<section id="lack-of-complete-overlap" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="lack-of-complete-overlap"><span class="header-section-number">5.3.2</span> Lack of Complete Overlap</h3>
+<p><a href="#fig-overlap">Figure&nbsp;<span>5.4</span></a> shows what lack of complete overlap (with respect to <span class="math inline">\(x\)</span>) might look like:</p>
+<div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">10</span>) <span class="sc">+</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dnorm</span>(x, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dnorm</span>(x, <span class="dv">7</span>, <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_family =</span> <span class="st">"Avenir Next Condensed"</span>, <span class="at">base_line_size =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">title =</span> <span class="st">"No overlap"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">10</span>) <span class="sc">+</span> </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dnorm</span>(x, <span class="dv">1</span>, <span class="dv">1</span>), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dnorm</span>(x, <span class="dv">4</span>, <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_family =</span> <span class="st">"Avenir Next Condensed"</span>, <span class="at">base_line_size =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span> </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">title =</span> <span class="st">"Partial overlap"</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">10</span>) <span class="sc">+</span> </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dnorm</span>(x, <span class="dv">2</span>, <span class="dv">3</span>), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> \(x) <span class="fu">dnorm</span>(x, <span class="dv">7</span>, <span class="dv">1</span>)) <span class="sc">+</span> </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_family =</span> <span class="st">"Avenir Next Condensed"</span>, <span class="at">base_line_size =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span> </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">title =</span> <span class="st">"Partial overlap"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-overlap" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-overlap-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-overlap-1.png" class="img-fluid figure-img" data-ref-parent="fig-overlap" width="240"></p>
+<p></p><figcaption class="figure-caption">(a) Two distributions with no overlap</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-overlap-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-overlap-2.png" class="img-fluid figure-img" data-ref-parent="fig-overlap" width="240"></p>
+<p></p><figcaption class="figure-caption">(b) Two distributions with partial overlap</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 33.3%;justify-content: center;">
+<div id="fig-overlap-3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-overlap-3.png" class="img-fluid figure-img" data-ref-parent="fig-overlap" width="240"></p>
+<p></p><figcaption class="figure-caption">(c) The <em>range</em> of one distribution is a subset of the range of the other.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.4: Lack of complete overlap in distributions across treatment and control groups.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<p>Lack of complete overlap creates problems because in this setting we have treatment or control observations for which we have <em>no empirical counterfactuals</em>. Thus, in regions of non-overlap, knowledge about treatment effects is inherently limited.</p>
+<p><a href="#fig-extrapolation">Figure&nbsp;<span>5.5</span></a> shows how inferences regarding areas with no overlap inevitably rely on modeling assumptions. A traditional regression model fitted to data without complete overlap is <em>forced to extrapolate</em> beyond the support of the data.</p>
+<p>Note, however, that even the incorrectly specified linear regression lines provide a decent fit <em>in the overlapping region</em>, as shown in <a href="#fig-extrapolation-3">Figure&nbsp;<span>5.5 (c)</span></a> and <a href="#fig-extrapolation-4">Figure&nbsp;<span>5.5 (d)</span></a>.</p>
+<div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fY1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">exp</span>(x<span class="sc">/</span><span class="dv">5</span>) <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">cos</span>(x <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">+</span> <span class="dv">15</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fY0 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">6</span><span class="sc">*</span><span class="fu">log</span>(x <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">-</span> <span class="fl">0.08</span><span class="sc">*</span>x<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">5</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>d_sim <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">runif</span>(<span class="dv">100</span>, <span class="dv">0</span>, <span class="dv">10</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(x), <span class="at">mean =</span> <span class="fu">fY0</span>(x), <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">treatment =</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(x), <span class="at">mean =</span> <span class="fu">fY1</span>(x), <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> control<span class="sc">:</span>treatment, </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"z"</span>, </span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"y"</span>, </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_transform =</span> factor</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(z <span class="sc">==</span> <span class="st">"control"</span> <span class="sc">&amp;</span> x <span class="sc">&lt;=</span> <span class="dv">7</span> <span class="sc">|</span> z <span class="sc">==</span> <span class="st">"treatment"</span> <span class="sc">&amp;</span> x <span class="sc">&gt;=</span> <span class="dv">3</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>par_s <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> d_sim)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>var_s <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x<span class="sc">*</span>z, <span class="at">data =</span> d_sim)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>sub_par_s <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z, <span class="at">data =</span> d_sim, <span class="at">subset =</span> x <span class="sc">&gt;=</span> <span class="dv">3</span> <span class="sc">&amp;</span> x <span class="sc">&lt;=</span> <span class="dv">7</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> d_sim <span class="sc">|&gt;</span> </span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(x, y)) <span class="sc">+</span> </span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> fY0) <span class="sc">+</span> </span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_function</span>(<span class="at">fun =</span> fY1) <span class="sc">+</span> </span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> z), <span class="at">show.legend =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">color =</span> <span class="st">"#4C4C4C"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">19</span>, <span class="dv">21</span>)) <span class="sc">+</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="st">"Y"</span>) <span class="sc">+</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>, <span class="at">vjust =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>),</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>d_grid <span class="ot">&lt;-</span> tidyr<span class="sc">::</span><span class="fu">crossing</span>(</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>),</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">z =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"control"</span>, <span class="st">"treatment"</span>))</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>g <span class="sc">+</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> broom<span class="sc">::</span><span class="fu">augment</span>(par_s, <span class="at">newdata =</span> d_grid),</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(x, .fitted, <span class="at">group =</span> z),</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">"dashed"</span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>g <span class="sc">+</span></span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> broom<span class="sc">::</span><span class="fu">augment</span>(var_s, <span class="at">newdata =</span> d_grid),</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(x, .fitted, <span class="at">group =</span> z),</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">"dashed"</span></span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>g <span class="sc">+</span></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> broom<span class="sc">::</span><span class="fu">augment</span>(par_s, <span class="at">newdata =</span> d_grid),</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(x, .fitted, <span class="at">group =</span> z),</span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">"dashed"</span></span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>g <span class="sc">+</span></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> broom<span class="sc">::</span><span class="fu">augment</span>(sub_par_s, <span class="at">newdata =</span> d_grid),</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(x, .fitted, <span class="at">group =</span> z),</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">"dashed"</span></span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-extrapolation" class="cell quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-extrapolation-1" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-extrapolation-1.png" class="img-fluid figure-img" data-ref-parent="fig-extrapolation" width="240"></p>
+<p></p><figcaption class="figure-caption">(a) A regression estimating the effect of a treatment on <span class="math inline">\(Y\)</span>, adjusting for <span class="math inline">\(X\)</span>.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-extrapolation-2" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-extrapolation-2.png" class="img-fluid figure-img" data-ref-parent="fig-extrapolation" width="240"></p>
+<p></p><figcaption class="figure-caption">(b) Allowing for an interaction sometimes makes extrapolation worse.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-extrapolation-3" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-extrapolation-3.png" class="img-fluid figure-img" data-ref-parent="fig-extrapolation" width="240"></p>
+<p></p><figcaption class="figure-caption">(c) The view is restricted to the area of overlap.</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-extrapolation-4" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="causality-02-regression_files/figure-html/fig-extrapolation-4.png" class="img-fluid figure-img" data-ref-parent="fig-extrapolation" width="240"></p>
+<p></p><figcaption class="figure-caption">(d) New regression lines fitted using only observations in this overlapping region.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5.5: Hypothetical data demonstrating the problems with extrapolation when there is lack of overlap between covariates. The “true” causal effect is the vertical distance between the two solid lines. The estimated causal effect is the vertical distance between the two dashed lines.</figcaption><p></p>
 </figure>
 </div>
 </div>
@@ -570,6 +875,9 @@ Gelman, Andrew, Jennifer Hill, and Aki Vehtari. 2020. <em>Regression and Other S
 </div>
 <div id="ref-huntington-klein2021" class="csl-entry" role="doc-biblioentry">
 Huntington-Klein, Nick. 2021. <em>The Effect: An Introduction to Research Design and Causality</em>. New York: Chapman; Hall/CRC. <a href="https://doi.org/10.1201/9781003226055">https://doi.org/10.1201/9781003226055</a>.
+</div>
+<div id="ref-westreich2013" class="csl-entry" role="doc-biblioentry">
+Westreich, Daniel, and Sander Greenland. 2013. <span>“The Table&nbsp;2 Fallacy: Presenting and Interpreting Confounder and Modifier Coefficients.”</span> <em>American Journal of Epidemiology</em> 177 (4): 292–98. <a href="https://doi.org/10.1093/aje/kws412">https://doi.org/10.1093/aje/kws412</a>.
 </div>
 </div>
 </section>

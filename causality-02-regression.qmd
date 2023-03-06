@@ -10,9 +10,7 @@ In short, causal effects can be estimated with regression if the model includes 
 
 ## Translating DAGs
 
-![Flow Chart For Constructing Regression Equations](images/reg-chart.png){#fig-reg-chart fig-align="center" width="70%"}
-
-<aside>@huntington-klein2021 [pp. 199]</aside>
+![Flow Chart For Constructing Regression Equations [@huntington-klein2021, pp. 199]](images/reg-chart.png){#fig-reg-chart fig-align="center" width="70%"}
 
 Suppose our causal diagram is as follows:
 
@@ -36,13 +34,13 @@ $$
 z_i = \gamma_0 + \gamma_1 t_i + u_i
 $$
 
-If we substitute this representation of $t$ into the original "true" regression and rearrange the terms, we the the following:
+If we substitute this representation of $t$ into the original "true" regression and rearrange the terms, we then have the following:
 
 $$
 y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta_1 + \beta_2 \gamma_1)}_{\beta_1^*} \ t_i + \underbrace{(\beta_2 u + \varepsilon)}_{\varepsilon^*}
 $$
 
-If there's no association between the treatment and the purported confounder ($\gamma_1 = 0$), *then there is no bias.*
+Thus, if there's no association between the treatment and the purported confounder ($\gamma_1 = 0$), *then there is no bias.*
 
 In `R`:
 
@@ -71,19 +69,15 @@ modelsummary::msummary(
 
 Here, we see that $\beta_1 \approx 2$ and $\beta_1^* \approx 5$.
 
-## Balance and Overlap
-
-The sort of bias that we get from confounding can be interpreted more precisely as **imbalance** in the potential outcomes across treatment groups. This is the sort of imbalance is unlikely with *randomization*, but it's almost guaranteed in observational studies.
-
-There are different methods that attempt to address imbalance and lack of overlap: stratification, regression adjustments, matching, weighting, or a combination of these.
-
 ### The Electric Company
 
 **Setting up a regression for causal inference**
 
 Going back to the Electric Company example, we can think of `supp`, whether teachers *chose* to replace or supplementing the regular reading program with the television show, as a different treatment.
 
-Given that this decision is not randomized, we cannot simply compare outcomes across the two new treatment groups. However, we can *assume* ignorability if we are willing to believe that `pre_test` is the only confounding variable---i.e., that the probability of assignment was determined by the average pre-test scores in that classroom. *This is a strong assumption*.
+Given that this decision is not randomized, we cannot simply compare outcomes across the two new treatment groups. However, we can *assume* ignorability if we are willing to believe that `pre_test` is the only confounding variable---i.e., that the probability of assignment was determined by the average pre-test scores in that classroom.
+
+*This is a strong assumption, it requires a leap of faith.*
 
 ```{r}
 #| code-fold: true
@@ -105,16 +99,23 @@ d <- read_csv(url)[, -1] |>
   filter(treatment == 1)
 ```
 
+Just look at the change in coefficient and standard error estimates:
+
 ```{r}
 mod1 <- lm(post_test ~ supp, data = d)
 mod2 <- lm(post_test ~ supp + pre_test, data = d)
-mod3 <- lm(post_test ~ supp + pre_test + grade, data = d)
+mod3 <- lm(post_test ~ supp + pre_test + grade, 
+           data = mutate(d, grade = factor(grade)))
 
 modelsummary::msummary(
   models = list(mod1, mod2, mod3), 
   gof_map = NA
 )
 ```
+
+*Note. The grade coefficients are increasingly negative because they are positively correlated with pre-test scores. Remember, **we cannot interpret confounders causally**[see @westreich2013].*
+
+And here's a separate model for each grade:
 
 ```{r}
 #| code-fold: true
@@ -124,12 +125,14 @@ modelsummary::msummary(
 #|   - "Regression on non-random treatment indicator"
 #|   - "Regression on non-random treatment indicator and pre-test"
 #| layout-ncol: 2
+#| fig-width: 4
+#| fig-height: 3
 
 fit1 <- map_df(1:4, function(i) {
   lm(formula = post_test ~ supp, 
      data = d, 
      subset = grade == i) |> 
-    broom::tidy(conf.int = TRUE) |> 
+    broom::tidy() |> 
     filter(term == "supp") |> 
     mutate(grade = paste("Grade", i))
 })
@@ -138,7 +141,7 @@ fit2 <- map_df(1:4, function(i) {
   lm(formula = post_test ~ supp + pre_test, 
      data = d, 
      subset = grade == i) |> 
-    broom::tidy(conf.int = TRUE) |> 
+    broom::tidy() |> 
     filter(term == "supp") |> 
     mutate(grade = paste("Grade", i))
 })
@@ -156,7 +159,7 @@ fit1 |>
     ), linewidth = 1.5
   ) +
   geom_point(shape = 21, fill = "white") + 
-  labs(y = NULL, x = "supp",
+  labs(y = NULL, x = "treatment",
        title = "lm(post_treat ~ supp)")
 
 fit2 |> 
@@ -174,6 +177,237 @@ fit2 |>
   geom_point(shape = 21, fill = "white") + 
   labs(y = NULL, x = "treatment",
        title = "lm(post_treat ~ supp + pre_test)")
+```
+
+## Notation
+
+The logic of regression adjustments is relatively straightforward, we want *apples to apples* comparisons. This is the same logic behind matching and weighting.
+
+Instead of a simple independence assumption that we have for randomized experiments, we now have to rely on a **conditional** ignorability. Just like in the case of experiments, we want distribution of potential outcomes the same across levels of the treatment variable. In other words, the potential outcomes and the treatment indicator *should* be independent, conditional on the covariates $\boldsymbol{X}$ used in the analysis.
+
+<aside>*Ignorability, Conditional Independence Assumption (CIA), or Selection on Observables*</aside>
+
+$$
+Y^0, Y^1 \perp T \mid \boldsymbol X
+$$ {#eq-cond-ind}
+
+Thus, in expectation:
+
+$$
+\begin{align}
+E\big[Y^1 \mid T=1, \boldsymbol{X} \big] &= E\big[Y^1 \mid T=0, \boldsymbol{X} \big] \\
+E\big[Y^0 \mid T=1, \boldsymbol{X} \big] &= E\big[Y^0 \mid T=0, \boldsymbol{X} \big]
+\end{align}
+$$ {#eq-cond-ind-2}
+
+These conditional quantities can be used to construct the marginal effects needed to construct the *average treatment effect.*
+
+$$
+\text{ATE} = E[Y^1 - Y^0] = \underbrace{E\Big[E[Y^1 \mid \boldsymbol{X}] \Big] - E \Big[E[Y^0 \mid \boldsymbol{X}] \Big] = E[Y^1] - E[Y^0]}_\text{Law of Iterated Expectations}
+$$ {#eq-iterated-ate}
+
+This strategy will get more complicated as the vector $\boldsymbol X$ grows in size.
+
+> Once the number and type of confounders gets more complicated, perhaps the simplest parametric model that we can fit to estimate these expectations is linear regression. For instance, if we assume that the treatment effect, $\tau$, is constant (or at least additive) we might posit that $E( Y^Z \mid \boldsymbol X) = \beta_0+ \boldsymbol{X \beta}+ \tau Z$ . If ignorability is satisfied and this model holds, we simply need to regress the outcome on the treatment indicator and confounders. The estimated coefficient on $Z$ from this fit, $\hat \tau$, can be conceptualized as a weighted version of all of the conditional effect estimates. However, fitting a model to estimate these quantities is not without potential weaknesses. The two most obvious concerns are imbalance and lack of complete overlap...
+>
+> @gelman2020 [pp. 390]
+
+*Note. This sometimes shows up in econometrics as the **exogeneity assumption***.
+
+## Balance and Overlap
+
+The sort of bias that we get from confounding can be interpreted more precisely as **imbalance** in the potential outcomes across treatment groups. This is the sort of imbalance is unlikely with *randomization*, but it's almost guaranteed in observational studies.
+
+There are different methods that attempt to address imbalance and lack of overlap: stratification, regression adjustments, matching, weighting, or a combination of these.
+
+> Imbalance and lack of complete overlap are issues for causal inference even if ignorability holds because they force us to rely more heavily on model specification and less on direct support from the data.
+>
+> @gelman2020 [pp. 391]
+
+### Imbalance
+
+Imbalance occurs if the distributions of confounders differ for the treatment and control groups. @fig-imbalance shows two examples of imbalance with respect to a single covariate $x$. The problem with imbalance is that it forces us to rely more heavily on model specification and less on direct support from the data. This is true even if ignorability holds.
+
+```{r}
+#| code-fold: true
+#| label: fig-imbalance
+#| fig-cap: "Imbalance in distributions across treatment and control groups"
+#| fig-subcap: 
+#|   - "The groups differ in their averages but cover the same range of $x$"
+#|   - "A more subtle form of imbalance, the groups have the same average but different distributions"
+#| layout-ncol: 2
+#| fig-height: 3
+#| fig-width: 4
+
+ggplot() + 
+  xlim(0, 1) +
+  geom_function(fun = \(x) dbeta(x, 5, 2)) +
+  geom_function(fun = \(x) dbeta(x, 2, 5), linetype = "dashed") +
+  geom_vline(xintercept = c(0.4, 0.6), linetype = "dotted") +
+  labs(x = "X", y = NULL) +
+  theme_bw(base_family = "Avenir Next Condensed", base_line_size = 0) + 
+  theme(axis.text = element_blank()) 
+
+ggplot() + 
+  xlim(0, 1) +
+  geom_function(fun = \(x) dbeta(x, 3, 2.2), linetype = "dashed") +
+  geom_function(fun = \(x) dbeta(x, 2.2, 3)) +
+  geom_vline(xintercept = 0.5, linetype = "dotted") +
+  labs(x = "X", y = NULL) +
+  theme_bw(base_family = "Avenir Next Condensed", base_line_size = 0) + 
+  theme(axis.text = element_blank()) 
+```
+
+Consider what happens if we try to make inferences about the effect of a treatment $\theta$ on $y$, while adjusting for $x$.
+
+$$
+\begin{align}
+\text{treated:}  &&y_i &= \beta_0 + \theta + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i \\ \\
+\text{control:} &&y_i &= \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i
+\end{align}
+$$
+
+Averaging over each group separately, solving the second equation for $\beta_0$, and then plugging that into the first equation to solve for $\theta$ yields the following equation:
+
+$$
+\theta = (\overline y_t - \overline y_c) - \underbrace{\beta_1 (\overline x_t - \overline x_c) - \beta_2 (\overline {x^2_t} - \overline {x^2_c})}_\text{adjustment}
+$$ {#eq-reg-adjust}
+
+This is why it's so important to get the model specification right. For example, notice that if we don't include the quadratic term in the linear model, the estimate of $\theta$ will be off by $\beta_2 (\overline {x^2_t} - \overline {x^2_c})$.
+
+More importantly, if the distribution of covariates is similar across treatment groups, then the model specification matters less---i.e., if there is balance, then $\overline x_t - \overline x_c$ is closer to zero. This is why methods that match or weight to create balance may help to create some immunity from failure to correctly specify the model.
+
+### Lack of Complete Overlap
+
+@fig-overlap shows what lack of complete overlap (with respect to $x$) might look like:
+
+```{r}
+#| code-fold: true
+#| label: fig-overlap
+#| layout-ncol: 3
+#| fig-height: 2
+#| fig-width: 2.5
+#| fig-cap: "Lack of complete overlap in distributions across treatment and control groups."
+#| fig-subcap: 
+#|   - "Two distributions with no overlap"
+#|   - "Two distributions with partial overlap"
+#|   - "The _range_ of one distribution is a subset of the range of the other."
+
+ggplot() + 
+  xlim(-4, 10) + 
+  geom_function(fun = \(x) dnorm(x, -1, 1), linetype = "dashed") +
+  geom_function(fun = \(x) dnorm(x, 7, 1)) + 
+  theme_bw(base_family = "Avenir Next Condensed", base_line_size = 0) + 
+  theme(axis.text = element_blank()) + 
+  labs(x = "X", y = NULL, title = "No overlap")
+
+ggplot() + 
+  xlim(-4, 10) + 
+  geom_function(fun = \(x) dnorm(x, 1, 1), linetype = "dashed") +
+  geom_function(fun = \(x) dnorm(x, 4, 1)) + 
+  theme_bw(base_family = "Avenir Next Condensed", base_line_size = 0) + 
+  theme(axis.text = element_blank()) + 
+  labs(x = "X", y = NULL, title = "Partial overlap")
+
+ggplot() + 
+  xlim(-4, 10) + 
+  geom_function(fun = \(x) dnorm(x, 2, 3), linetype = "dashed") +
+  geom_function(fun = \(x) dnorm(x, 7, 1)) + 
+  theme_bw(base_family = "Avenir Next Condensed", base_line_size = 0) + 
+  theme(axis.text = element_blank()) + 
+  labs(x = "X", y = NULL, title = "Partial overlap")
+
+
+```
+
+Lack of complete overlap creates problems because in this setting we have treatment or control observations for which we have *no empirical counterfactuals*. Thus, in regions of non-overlap, knowledge about treatment effects is inherently limited.
+
+@fig-extrapolation shows how inferences regarding areas with no overlap inevitably rely on modeling assumptions. A traditional regression model fitted to data without complete overlap is *forced to extrapolate* beyond the support of the data.
+
+Note, however, that even the incorrectly specified linear regression lines provide a decent fit *in the overlapping region*, as shown in @fig-extrapolation-3 and @fig-extrapolation-4.
+
+```{r}
+#| code-fold: true
+#| label: fig-extrapolation
+#| layout-ncol: 2
+#| fig-height: 2
+#| fig-width: 2.5
+#| fig-cap: "Hypothetical data demonstrating the problems with extrapolation when there is lack of overlap between covariates. The \"true\" causal effect is the vertical distance between the two solid lines. The estimated causal effect is the vertical distance between the two dashed lines."
+#| fig-subcap: 
+#|   - "A regression estimating the effect of treatment $T$ on $Y$, adjusting for $X$."
+#|   - "Allowing for an interaction sometimes makes extrapolation worse."
+#|   - "The view is restricted to the area of overlap."
+#|   - "New regression lines fitted using only observations in this overlapping region."
+
+fY1 <- function(x) exp(x/5) + 2*cos(x + 1) + 15
+fY0 <- function(x) 6*log(x + 1) - 0.08*x^2 + 5
+
+d_sim <- tibble(
+  x = runif(100, 0, 10),
+  control = rnorm(length(x), mean = fY0(x), sd = 1),
+  treatment = rnorm(length(x), mean = fY1(x), sd = 1),
+) |> 
+  pivot_longer(
+    cols = control:treatment, 
+    names_to = "z", 
+    values_to = "y", 
+    names_transform = factor
+  ) |> 
+  filter(z == "control" & x <= 7 | z == "treatment" & x >= 3)
+
+par_s <- lm(y ~ x + z, data = d_sim)
+var_s <- lm(y ~ x*z, data = d_sim)
+sub_par_s <- lm(y ~ x + z, data = d_sim, subset = x >= 3 & x <= 7)
+
+g <- d_sim |> 
+  ggplot(aes(x, y)) + 
+  geom_function(fun = fY0) + 
+  geom_function(fun = fY1) + 
+  geom_point(aes(shape = z), show.legend = FALSE, 
+             fill = "skyblue", color = "#4C4C4C", size = 1) + 
+  scale_shape_manual(values = c(19, 21)) +
+  labs(x = "X", y = "Y") +
+  theme(
+    axis.title.y = element_text(angle = 0, vjust = 1/2),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )
+
+d_grid <- tidyr::crossing(
+  x = seq(0, 10, length.out = 100),
+  z = factor(c("control", "treatment"))
+)
+
+g +
+  geom_line(
+    data = broom::augment(par_s, newdata = d_grid),
+    mapping = aes(x, .fitted, group = z),
+    linetype = "dashed"
+  )
+
+g +
+  geom_line(
+    data = broom::augment(var_s, newdata = d_grid),
+    mapping = aes(x, .fitted, group = z),
+    linetype = "dashed"
+  )
+
+g +
+  coord_cartesian(xlim = c(3, 7)) +
+    geom_line(
+    data = broom::augment(par_s, newdata = d_grid),
+    mapping = aes(x, .fitted, group = z),
+    linetype = "dashed"
+  )
+
+g +
+  coord_cartesian(xlim = c(3, 7)) +
+  geom_line(
+    data = broom::augment(sub_par_s, newdata = d_grid),
+    mapping = aes(x, .fitted, group = z),
+    linetype = "dashed"
+  )
 ```
 
 Temporal ordering @gelman2020 [pp. 414]

@@ -268,7 +268,8 @@ Just look at the change in coefficient and standard error estimates:
 ```{r}
 mod1 <- lm(post_test ~ treatment, data = d)
 mod2 <- lm(post_test ~ treatment + pre_test, data = d)
-mod3 <- lm(post_test ~ treatment + pre_test + grade, data = d)
+mod3 <- lm(post_test ~ treatment + pre_test + grade, 
+           data = mutate(d, grade = factor(grade)))
 
 modelsummary::msummary(
   models = list(mod1, mod2, mod3), 
@@ -276,6 +277,8 @@ modelsummary::msummary(
 )
 
 ```
+
+*Note. The grade coefficients are increasingly negative because they are positively correlated with `pre_test`. Remember, we can't expect to interpret these coefficients causally \[@westreich2013\].*
 
 And here's a separate model for each grade:
 
