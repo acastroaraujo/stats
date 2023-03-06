@@ -311,11 +311,11 @@ y_i = \beta_0^* + \beta_1^* t_i+ \varepsilon^*_i
 <p><span class="math display">\[
 z_i = \gamma_0 + \gamma_1 t_i + u_i
 \]</span></p>
-<p>If we substitute this representation of <span class="math inline">\(t\)</span> into the original “true” regression and rearrange the terms, we the the following:</p>
+<p>If we substitute this representation of <span class="math inline">\(t\)</span> into the original “true” regression and rearrange the terms, we then have the following:</p>
 <p><span class="math display">\[
 y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta_1 + \beta_2 \gamma_1)}_{\beta_1^*} \ t_i + \underbrace{(\beta_2 u + \varepsilon)}_{\varepsilon^*}
 \]</span></p>
-<p>If there’s no association between the treatment and the purported confounder (<span class="math inline">\(\gamma_1 = 0\)</span>), <em>then there is no bias.</em></p>
+<p>Thus, if there’s no association between the treatment and the purported confounder (<span class="math inline">\(\gamma_1 = 0\)</span>), <em>then there is no bias.</em></p>
 <p>In <code>R</code>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fl">1e3</span></span>
@@ -351,18 +351,18 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <tbody>
   <tr>
    <td style="text-align:left;"> (Intercept) </td>
-   <td style="text-align:center;"> 1.028 </td>
-   <td style="text-align:center;"> 6.921 </td>
+   <td style="text-align:center;"> 1.040 </td>
+   <td style="text-align:center;"> 6.910 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
-   <td style="text-align:center;"> (0.070) </td>
-   <td style="text-align:center;"> (0.098) </td>
+   <td style="text-align:center;"> (0.071) </td>
+   <td style="text-align:center;"> (0.099) </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t </td>
    <td style="text-align:center;"> 2.017 </td>
-   <td style="text-align:center;"> 5.002 </td>
+   <td style="text-align:center;"> 4.991 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
@@ -371,7 +371,7 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
   </tr>
   <tr>
    <td style="text-align:left;"> z </td>
-   <td style="text-align:center;"> 2.985 </td>
+   <td style="text-align:center;"> 2.983 </td>
    <td style="text-align:center;">  </td>
   </tr>
   <tr>
@@ -389,7 +389,8 @@ y_i = \underbrace{(\beta_0 + \beta_2 \gamma_0)}_{\beta_0^*} + \underbrace{(\beta
 <h3 data-number="5.1.1" class="anchored" data-anchor-id="the-electric-company"><span class="header-section-number">5.1.1</span> The Electric Company</h3>
 <p><strong>Setting up a regression for causal inference</strong></p>
 <p>Going back to the Electric Company example, we can think of <code>supp</code>, whether teachers <em>chose</em> to replace or supplementing the regular reading program with the television show, as a different treatment.</p>
-<p>Given that this decision is not randomized, we cannot simply compare outcomes across the two new treatment groups. However, we can <em>assume</em> ignorability if we are willing to believe that <code>pre_test</code> is the only confounding variable—i.e., that the probability of assignment was determined by the average pre-test scores in that classroom. <em>This is a strong assumption, it requires a leap of faith.</em></p>
+<p>Given that this decision is not randomized, we cannot simply compare outcomes across the two new treatment groups. However, we can <em>assume</em> ignorability if we are willing to believe that <code>pre_test</code> is the only confounding variable—i.e., that the probability of assignment was determined by the average pre-test scores in that classroom.</p>
+<p><em>This is a strong assumption, it requires a leap of faith.</em></p>
 <div class="cell">
 <details>
 <summary>Setup</summary>
@@ -831,7 +832,7 @@ E\big[Y^0 \mid T=1, \boldsymbol{X} \big] &amp;= E\big[Y^0 \mid T=0, \boldsymbol{
 <div id="fig-extrapolation-1" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="causality-02-regression_files/figure-html/fig-extrapolation-1.png" class="img-fluid figure-img" data-ref-parent="fig-extrapolation" width="240"></p>
-<p></p><figcaption class="figure-caption">(a) A regression estimating the effect of a treatment on <span class="math inline">\(Y\)</span>, adjusting for <span class="math inline">\(X\)</span>.</figcaption><p></p>
+<p></p><figcaption class="figure-caption">(a) A regression estimating the effect of treatment <span class="math inline">\(T\)</span> on <span class="math inline">\(Y\)</span>, adjusting for <span class="math inline">\(X\)</span>.</figcaption><p></p>
 </figure>
 </div>
 </div>

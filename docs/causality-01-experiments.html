@@ -282,27 +282,27 @@ div.csl-indent {
 <section id="notation" class="level2 page-columns page-full" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="notation"><span class="header-section-number">4.1</span> Notation</h2>
 <p>Experiments work because they make the distribution of potential outcomes the same across levels of the treatment variable. In other words, the potential outcomes and the treatment indicator are <em>independent.</em></p>
-<p><span class="math display">\[
+<p><span id="eq-ignorability"><span class="math display">\[
 Y^0, Y^1 \perp T
-\]</span></p>
+\tag{4.1}\]</span></span></p>
 <aside>
 <em>Ignorability</em>
 </aside>
 <p>Thus, in expectation:</p>
-<p><span class="math display">\[
+<p><span id="eq-ind"><span class="math display">\[
 \begin{align}
 E[Y^0 \mid T = 0] &amp;= E[Y^0 \mid T = 1], \\\\
 E[Y^1 \mid T = 0] &amp;= E[Y^1 \mid T = 1]
 \end{align}
-\]</span></p>
+\tag{4.2}\]</span></span></p>
 <aside>
 <p><em>…ignorability implies that the value of someone’s potential outcomes does not provide any information about his or her treatment group assignment”.</em></p>
 <p><span class="citation" data-cites="gelman2020">Gelman, Hill, and Vehtari (<a href="references.html#ref-gelman2020" role="doc-biblioref">2020, pp.&nbsp;350–1</a>)</span></p>
 </aside>
 <p>Which means that we can easily estimate the <em>average causal effect</em> of <span class="math inline">\(T\)</span> over all units in a population:</p>
-<p><span class="math display">\[
+<p><span id="eq-ate"><span class="math display">\[
 \text{ATE} = \underbrace{E[Y^1 - Y^0] = E[Y^1] - E[Y^0]}_\text{by linearity of expectations}
-\]</span></p>
+\tag{4.3}\]</span></span></p>
 <p>In the absence of randomization, so that treatment and control groups differ on pre-treatment characteristics, we might observe the following biases:</p>
 <ul>
 <li><p><strong>Baseline bias</strong>. The two groups might be different from each other whether they get treated or not.</p></li>
@@ -395,7 +395,7 @@ Some times we see these terms pre-fixed with an <span class="math inline">\(S\)<
 </section>
 <section id="sutva" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="sutva"><span class="header-section-number">4.2</span> SUTVA</h2>
-<p>Besides <strong>ignorability</strong> (see <a href="causality-00-intro.html#eq-ignore">Equation&nbsp;<span>1</span></a>), randomization implies certain other properties which we might consider to be <strong>assumptions</strong>.</p>
+<p>Besides <strong>ignorability</strong> (see <span class="quarto-unresolved-ref">?eq-ignore</span>), randomization implies certain other properties which we might consider to be <strong>assumptions</strong>.</p>
 <p>The most important one is the <strong>stable unit treatment value assumption</strong> (SUTVA). It means that we assume that there is no interference among units (i.e., no spillovers) and no hidden versions of the treatment.</p>
 <p>Thus, one can imagine person <span class="math inline">\(i\)</span>’s outcome to be “a function not only of her own treatment assignment, but also the treatment assignments of others in the sample” <span class="citation" data-cites="gelman2020">(<a href="references.html#ref-gelman2020" role="doc-biblioref">Gelman, Hill, and Vehtari 2020, 353</a>)</span>. These becomes intractable very quickly. For example, in a sample of just 10 people and a binary treatment, we would have 2<sup>10</sup> = 1024 potential outcomes for each person. Thus, researchers often hope that there is no interference among units, or else they think about modeling spillover in some way.</p>
 <p>SUTVA also implies that there are no hidden versions of treatments—i.e., we want <span class="math inline">\(t_i\)</span> to equal <span class="math inline">\(t_j\)</span>.</p>
@@ -545,7 +545,7 @@ Some times we see these terms pre-fixed with an <span class="math inline">\(S\)<
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Naive Estimate: </span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(d<span class="sc">$</span>Y1[j] <span class="sc">-</span> d<span class="sc">$</span>Y0[<span class="sc">!</span>j])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.25</code></pre>
+<pre><code>[1] 3.75</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ATT:</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(d<span class="sc">$</span>Y1[j] <span class="sc">-</span> d<span class="sc">$</span>Y0[j])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -565,12 +565,12 @@ Some times we see these terms pre-fixed with an <span class="math inline">\(S\)<
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Naive Estimate: </span></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(d<span class="sc">$</span>Y1[k] <span class="sc">-</span> d<span class="sc">$</span>Y0[<span class="sc">!</span>k])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 4.5</code></pre>
+<pre><code>[1] 2</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ATT:</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(d<span class="sc">$</span>Y1[k] <span class="sc">-</span> d<span class="sc">$</span>Y0[k])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.25</code></pre>
+<pre><code>[1] 0.75</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ATE:</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(d<span class="sc">$</span>Y1 <span class="sc">-</span> d<span class="sc">$</span>Y0)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -641,12 +641,13 @@ The notebook on regression adjustments and causal inference revisits the <code>s
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(post_test <span class="sc">~</span> treatment, <span class="at">data =</span> d)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(post_test <span class="sc">~</span> treatment <span class="sc">+</span> pre_test, <span class="at">data =</span> d)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(post_test <span class="sc">~</span> treatment <span class="sc">+</span> pre_test <span class="sc">+</span> grade, <span class="at">data =</span> d)</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>modelsummary<span class="sc">::</span><span class="fu">msummary</span>(</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">list</span>(mod1, mod2, mod3), </span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="cn">NA</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(post_test <span class="sc">~</span> treatment <span class="sc">+</span> pre_test <span class="sc">+</span> grade, </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> <span class="fu">mutate</span>(d, <span class="at">grade =</span> <span class="fu">factor</span>(grade)))</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>modelsummary<span class="sc">::</span><span class="fu">msummary</span>(</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">models =</span> <span class="fu">list</span>(mod1, mod2, mod3), </span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">gof_map =</span> <span class="cn">NA</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -663,55 +664,80 @@ The notebook on regression adjustments and causal inference revisits the <code>s
    <td style="text-align:left;"> (Intercept) </td>
    <td style="text-align:center;"> 94.321 </td>
    <td style="text-align:center;"> 61.558 </td>
-   <td style="text-align:center;"> 63.068 </td>
+   <td style="text-align:center;"> 58.456 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
    <td style="text-align:center;"> (1.794) </td>
    <td style="text-align:center;"> (1.471) </td>
-   <td style="text-align:center;"> (1.536) </td>
+   <td style="text-align:center;"> (1.485) </td>
   </tr>
   <tr>
    <td style="text-align:left;"> treatment </td>
    <td style="text-align:center;"> 5.657 </td>
    <td style="text-align:center;"> 4.734 </td>
-   <td style="text-align:center;"> 4.548 </td>
+   <td style="text-align:center;"> 4.052 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
    <td style="text-align:center;"> (2.537) </td>
    <td style="text-align:center;"> (1.160) </td>
-   <td style="text-align:center;"> (1.140) </td>
+   <td style="text-align:center;"> (1.063) </td>
   </tr>
   <tr>
    <td style="text-align:left;"> pre_test </td>
    <td style="text-align:center;">  </td>
    <td style="text-align:center;"> 0.460 </td>
-   <td style="text-align:center;"> 0.553 </td>
+   <td style="text-align:center;"> 0.800 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
    <td style="text-align:center;">  </td>
    <td style="text-align:center;"> (0.017) </td>
-   <td style="text-align:center;"> (0.036) </td>
+   <td style="text-align:center;"> (0.055) </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> grade </td>
+   <td style="text-align:left;"> grade2 </td>
    <td style="text-align:center;">  </td>
    <td style="text-align:center;">  </td>
-   <td style="text-align:center;"> −3.341 </td>
+   <td style="text-align:center;"> −21.722 </td>
   </tr>
   <tr>
    <td style="text-align:left;">  </td>
    <td style="text-align:center;">  </td>
    <td style="text-align:center;">  </td>
-   <td style="text-align:center;"> (1.163) </td>
+   <td style="text-align:center;"> (3.504) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> grade3 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> −29.846 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (4.666) </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> grade4 </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> −32.870 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;">  </td>
+   <td style="text-align:center;"> (5.242) </td>
   </tr>
 </tbody>
 </table>
 
 </div>
 </div>
+<p><em>Note. The grade coefficients are increasingly negative because they are positively correlated with <code>pre_test</code>. Remember, we can’t expect to interpret these coefficients causally <span class="citation" data-cites="westreich2013">(<a href="references.html#ref-westreich2013" role="doc-biblioref">Westreich and Greenland 2013</a>)</span>.</em></p>
 <p>And here’s a separate model for each grade:</p>
 <div>
 <details>
@@ -839,6 +865,9 @@ Meissner, Karin, Ulrike Bingel, Luana Colloca, Tor D. Wager, Alison Watson, and 
 </div>
 <div id="ref-rosenbaum2007" class="csl-entry" role="doc-biblioentry">
 Rosenbaum, Paul R. 2007. <span>“Interference Between Units in Randomized Experiments.”</span> <em>Journal of the American Statistical Association</em> 102 (477): 191200.
+</div>
+<div id="ref-westreich2013" class="csl-entry" role="doc-biblioentry">
+Westreich, Daniel, and Sander Greenland. 2013. <span>“The Table&nbsp;2 Fallacy: Presenting and Interpreting Confounder and Modifier Coefficients.”</span> <em>American Journal of Epidemiology</em> 177 (4): 292–98. <a href="https://doi.org/10.1093/aje/kws412">https://doi.org/10.1093/aje/kws412</a>.
 </div>
 </div>
 </section>

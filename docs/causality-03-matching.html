@@ -158,7 +158,7 @@ div.csl-indent {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./causality-02-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regression</span></a>
+  <a href="./causality-02-regression.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regression Adjustments</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -216,8 +216,12 @@ div.csl-indent {
 </ol>
 <section id="exact-matching" class="level2 page-columns page-full" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="exact-matching"><span class="header-section-number">6.1</span> Exact Matching</h2>
-<p>The logic of exact matching is relatively straightforward, we want <em>apples to apples</em> comparisons.</p>
-<p>Instead of a simple independence assumption that we have for randomized experiments, we now have to rely on a <strong>conditional independence assumption</strong> (CIA), like in regression.</p>
+<p>The logic of exact matching is relatively straightforward, we want <em>apples to apples</em> comparisons. This is the same logic behind regression adjustements.</p>
+<p>Instead of a simple independence assumption that we have for randomized experiments, we now have to rely on a <strong>conditional independence assumption</strong> (CIA).</p>
+<p><span class="math display">\[
+Y^0, Y^1 \perp T \mid S
+\]</span></p>
+<p>Thus, in expectation:</p>
 <p><span id="eq-cond-ind-assumption"><span class="math display">\[
 \begin{align}
 E\big[Y^1 \mid T=1, S \big] &amp;= E\big[Y^1 \mid T=0, S \big] \\
@@ -225,7 +229,7 @@ E\big[Y^0 \mid T=1, S \big] &amp;= E\big[Y^0 \mid T=0, S \big]
 \end{align}
 \tag{6.1}\]</span></span></p>
 <aside>
-<em>Ignorability</em>
+Conditional <em>Ignorability</em>
 </aside>
 <p>The assumption in <a href="#eq-cond-ind-assumption">Equation&nbsp;<span>6.1</span></a> means that we can observe counterfactuals, conditional on <strong>pre-treatment</strong> variables <span class="math inline">\(S\)</span>. Unfortunately, we cannot test the conditional independence assumption directly.</p>
 <p>Three overall assumptions:</p>
@@ -309,10 +313,10 @@ E\big[Y^0 \mid T=1, S \big] &amp;= E\big[Y^0 \mid T=0, S \big]
 <table class="table">
 <caption>Table&nbsp;6.2: Treatment Effect Heterogeneity (Modified Example)</caption>
 <colgroup>
-<col style="width: 23%">
-<col style="width: 25%">
-<col style="width: 23%">
-<col style="width: 27%">
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 26%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -514,7 +518,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./causality-02-regression.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regression</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Regression Adjustments</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
