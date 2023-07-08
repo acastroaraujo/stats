@@ -18,6 +18,10 @@ book:
         - causality-01-experiments.qmd
         - causality-02-regression.qmd
         - causality-03-matching.qmd
+        - causality-04-time.qmd
+    - part: other-00-intro.qmd
+      chapters:
+        - other-01-gps.qmd
     - references.qmd
 
 bibliography: references.bib
@@ -32,4 +36,8 @@ format:
 fig-align: center
 
 editor: visual
+
+execute:
+  echo: true
+  freeze: auto
 

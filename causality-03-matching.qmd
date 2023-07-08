@@ -95,3 +95,21 @@ $$
 **Common Support**
 
 Strata that have only treatment or control cases (not both) are called **off support.** Strata with both treatment and control cases are in the **region of common support.**
+
+*Move to matching*
+
+subclassification (stratifying, binning, interval matching) vs exact matching
+
+From sparseness to propensity scores. All exact matching is propensity score matching, but not all propensity score matching is exact matching.
+
+Estimate them using logistic regression or any other classifier.
+
+Workflow
+
+We don't have to do this with exact matching
+
+![](images/ps-workflow.png){fig-align="center" width="70%"}
+
+compress one dimensional projection, expand and check for balance
+
+the better your logistic regression is at predicting the outcome, the "worse" it is at providing common support; this makes sense because ultimately we want the ignorability assumption to hold

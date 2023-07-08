@@ -14,7 +14,7 @@
 
 -   **Instrumental variables (IV)**
 
-The first three strategies rely on the assumption of **ignorability** (or selection on observables). The last three strategies rely on a slightly different set of assumptions that may be more plausible in certain settings.
+The first three strategies rely on the assumption of **ignorability** (or selection on observables). The last three strategies rely on a slightly different set of assumptions that may be more plausible in certain settings. These last three strategies help us deal with confounding even if we can't observe any of the confounders (i.e., they can handle *unobserved heterogeneity)*.
 
 A different approach altogether involves assessing the **sensitivity** of our treatment effect estimates.
 

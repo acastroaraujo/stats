@@ -1,12 +1,30 @@
 # Regression Adjustments
 
+```{r}
+#| label: setup
+#| code-fold: true
+#| code-summary: "Setup"
+#| message: false
+#| warning: false
+
+library(tidyverse)
+```
+
 *This notebook is about regression in the context of causal inference.*
 
 In the usual context of regression, predictive inference relates to comparisons *between* units. In the context of causal inference, we attempt to make comparisons of different treatments *as if applied to the same units.*
 
-In order to make causal interpretations of regression coefficients we rely very strong assumptions.
+In order to make causal interpretations of regression coefficients we rely very strong assumptions. In short, causal effects can be estimated with regression if the model includes all confounding variables *and* if the model is correct.
 
-In short, causal effects can be estimated with regression if the model includes all confounding variables *and* if the model is correct.
+**Temporal ordering**
+
+All causal inference rests on an assumption so basic that we rarely bother to articulate: the temporal ordering of variables. All causal effects are measured *after* a treatment has been assigned.
+
+> In a retrospective observational study---that is, a study that uses data that have already been collected---the temporal ordering of the variables may be less clear. The most obvious problematic example is when study data come from a cross-sectional design (that is, when data on all variables were collected at the same time). It is possible in such a design that some of the questions refer to events in the past (previous schooling, jobs, health, relationship patterns) such that careful selection of variables may still be able to reflect the proper time ordering. This type of questioning about past events typically yields less reliable information, however. More desirable is a longitudinal design in which the researcher can select variables from different waves of the study.
+>
+> A final warning is in order. If the participants in a study know that a treatment *will* be administered in the future and they know or suspect what treatment group they will be in, they might alter their behavior *even before* the treatment is formally administered. In that case, the measurements taken prior to the treatment cannot be considered to be independent of the treatment and must be handled with the same precaution as other post-treatment variables.
+>
+> @gelman2020 [pp. 415]
 
 ## Translating DAGs
 
@@ -94,7 +112,7 @@ theme_set(
 
 url <- "https://raw.githubusercontent.com/avehtari/ROS-Examples/master/ElectricCompany/data/electric.csv"
 
-d <- read_csv(url)[, -1] |> 
+d <- read_csv(url)[-1] |> 
   mutate(across(grade:pair_id, as.integer)) |> 
   filter(treatment == 1)
 ```
@@ -320,7 +338,13 @@ ggplot() +
 
 ```
 
-Lack of complete overlap creates problems because in this setting we have treatment or control observations for which we have *no empirical counterfactuals*. Thus, in regions of non-overlap, knowledge about treatment effects is inherently limited.
+Lack of complete overlap or "common support" creates problems because in this setting we have treatment or control observations for which we have *no empirical counterfactuals*. Thus, knowledge about treatment effects is inherently limited in regions of non-overlap. Any causal inference in @fig-overlap-1 would rely on modeling assumptions instead of having direct support from the data. In @fig-overlap-3 causal inference is possible for the full treatment group but only for a subset of the control group.
+
+> There is an important correspondence between areas of overlap and the estimand of interest, and it can make sense to choose your inferential goal based on the support in the data.
+>
+> @gelman2020 [pp. 392]
+
+<aside>ATE, ATT, or ATU?</aside>
 
 @fig-extrapolation shows how inferences regarding areas with no overlap inevitably rely on modeling assumptions. A traditional regression model fitted to data without complete overlap is *forced to extrapolate* beyond the support of the data.
 
@@ -347,7 +371,7 @@ d_sim <- tibble(
   control = rnorm(length(x), mean = fY0(x), sd = 1),
   treatment = rnorm(length(x), mean = fY1(x), sd = 1),
 ) |> 
-  pivot_longer(
+  tidyr::pivot_longer(
     cols = control:treatment, 
     names_to = "z", 
     values_to = "y", 
@@ -367,12 +391,13 @@ g <- d_sim |>
              fill = "skyblue", color = "#4C4C4C", size = 1) + 
   scale_shape_manual(values = c(19, 21)) +
   labs(x = "X", y = "Y") +
+  theme_bw(base_family = "Avenir Next Condensed", base_line_size = 0) +
   theme(
     axis.title.y = element_text(angle = 0, vjust = 1/2),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank()
-  )
+  ) 
 
 d_grid <- tidyr::crossing(
   x = seq(0, 10, length.out = 100),
@@ -410,4 +435,75 @@ g +
   )
 ```
 
-Temporal ordering @gelman2020 [pp. 414]
+The dataset from the example in @fig-balance-childcare comes from a sample of nearly 4500 children born in the 1980s. A subset of 290 received several healthcare interventions; these children were targeted because they were born prematurely, had low birth weight, and lived in the eight cities were the intervention took place. We can start checking for imbalance for several covariates by examining their absolute standardized difference in means---i.e., a **balance plot**. @fig-balance-childcare-2 displays the *absolute standardized difference in means values* for a set of confounding covariates that might predict both program participation and subsequent test scores.
+
+```{r}
+#| code-fold: true
+#| message: false
+#| layout-ncol: 2
+#| label: fig-balance-childcare
+#| fig-cap: "Lack of complete overlap. If birth weight is a confounding covariate, then we will have to rely on model extrapolations to make inferences about the effect of the program on children with birth weights over 2500 grams."
+#| fig-subcap: 
+#|   - "Regression lines of test scores on birth weight (separately by treatment groups)"
+#|   - "Imbalance in averages of confounding covariates across treatment groups."
+#| fig-width: 4
+
+url <- "https://raw.githubusercontent.com/avehtari/ROS-Examples/master/Childcare/data/cc2.csv"
+d <- read_csv(url)[-1]
+d$momage <- sqrt(d$momageT)
+
+covs <- c(
+  'birth weight' = 'bw',
+  'weeks preterm' = 'preterm', 
+  'days in hospital' = 'dayskidh', 
+  'male' = 'sex', 
+  'first born' = 'first', 
+  'age' = 'age', 
+  'black' = 'black', 
+  'hispanic' = 'hispanic', 
+  'white' = 'white', 
+  'unmarried at birth' = 'b.marr', 
+  'less than high school' = 'lths', 
+  'high school graduate' = 'hs', 
+  'some college' = 'ltcoll', 
+  'college graduate' = 'college', 
+  'worked during pregnancy' = 'work.dur', 
+  'had no prenatal care' = 'prenatal', 
+  'age at birth' = 'momage'
+)
+
+d |> 
+  mutate(treat = fct_rev(factor(treat))) |> 
+  filter(between(bw, 1500, 5000)) |> 
+  ggplot(aes(bw, ppvtr.36)) +
+  geom_point(aes(color = treat), size = 2/3) + 
+  geom_smooth(aes(linetype = treat), method = "lm", linewidth = 1/2,
+              fullrange = TRUE, se = FALSE, color = "#323232") + 
+  scale_color_grey() + 
+  labs(x = "birth weight", y = "test score at age 3", 
+       color = "treatment", linetype = "treatment") +
+  theme(legend.position = "bottom")
+
+## treatment indicator
+t <- which(as.logical(d$treat))
+
+avg1 <- apply(d[t, covs], 2, mean)
+avg0 <- apply(d[-t, covs], 2, mean)
+sd1 <- apply(d[t, covs], 2, sd) ## only uses sd of treated
+z <- (avg1 - avg0) / sd1
+
+tibble(var = covs, diff = z, label = names(covs)) |> 
+  mutate(label = reorder(label, abs(diff))) |> 
+  ggplot(aes(abs(diff), label)) + 
+  geom_segment(aes(xend = abs(diff), yend = label), x = 0) + 
+  geom_point(shape = 21, fill = "white") + 
+  labs(y = NULL, x = "Absolute Standardized Differences in Means")
+
+
+```
+
+*Note. Lack of overlap is not the same as imbalance.*
+
+The next notebook discusses **matching/weighting** as strategies that help us deal with imbalance and rely less on modeling assumptions to deal with data outside the area of common support.
+
+## Exercises

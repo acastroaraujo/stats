@@ -1,0 +1,101 @@
+# Gaussian Proccesses
+
+## Background
+
+I started thinking that it would be useful to learn about Gaussian Processes in the context of a project of mine about the *Ecology of Rulings.*
+
+This framework, adapted from @march2000, builds upon three general ideas: (1) *rules evolve over time in response to problems;* (2) *rules are interrelated within an organization;* and (3) *rules both record history and reflect learning within the organization.*
+
+In this framework, the rulings of a higher court are related to each other according to continuous time (measured at day level) and according to an "embedding" space constructed out of word usage and citation practices. I expect correlations of birthrates to be positive when they are close in time and "space" but to be negative when they are close in time but far away in "space."
+
+Thus, we have two separate distance metrics.
+
+The problem is that we don't have a discrete measurement of time (at least one that's sufficiently meaningful) that we'd have with general concepts such as "cohort." We also don't have a discrete measurement of populations---i.e., rulings that are closer in embedding space exhibit more "groupiness," while ones that are farther away are less "groupy." It's a matter of degree.
+
+This is why I'm exploring Gaussian Processes.
+
+Alternative approach:
+
+Get the embedding, calculate distances, and then cluster.
+
+Then for each cluster $k$ we have $N_k$. Now N is the dependent variable and time is the independent variable. We expect different forms of density-dependence and cross-density dependence.
+
+mahalanobis??
+
+hyper-cube
+
+\-\-\--
+
+4321 vs citations /// mesoudi setup /// look at judges // individual learning
+
+## Gaussian Processes
+
+What are they? Will I need them?
+
+$$
+\boldsymbol u \sim \text{N}(\boldsymbol \mu, \boldsymbol \Sigma)
+$$
+
+where $u_i = u(s_i)$, $\mu_i = \mu(s_i)$, and $\Sigma_{i, j} = k(s_i, s_j)$ for some positive definite covariance function $k$ (or *kernel*).
+
+Another notation:
+
+Consider a stochastic process denoted by $\{ Y(\boldsymbol r) : \boldsymbol r \in D \}$ where $\boldsymbol r$ is a location in $D$ (some *d*-dimensional space). This process is called a Gaussian Process if it has all its finite-dimensional distributions determined by a mean function $\mu (\boldsymbol r)$ and a covariance function $k(\boldsymbol r, \boldsymbol r^\prime)$ for *any* location $\{\boldsymbol r, \boldsymbol r^\prime \} \in D$.
+
+That makes little sense. What else do we have?
+
+-   *A model for an unknown function.*
+
+-   We want to define a stochastic model for an unknown function $u(\boldsymbol s)$. We use a Gaussian distribution to model this joint distribution of $s_1, s_2, \dots, s_k$. Why? Because they are easy to use. But then we have to think hard about the covariance function, such that it stays "positive definite" (i.e., the eigenvalues stay non-negative).
+
+> A Gaussian *process* is a generalization of the Gaussian probability *distribution.* Whereas a probability distribution describes random variables which are scalars or vectors (for multivariate distributions), a stochastic *process* governs the properties of functions. Leaving mathematical sophistication aside, one can loosely think of a function as a very long vector, each entry in the vector specifying the function value f(x) at a particular input x. It turns out, that although this idea is a little naïve, it is surprisingly close what we need. Indeed, the question of how we deal computationally with these infinite dimensional objects has the most pleasant resolution imaginable: if you ask only for the properties of the function at a finite number of points, then inference in the Gaussian process will give you the same answer if you ignore the infinitely many other points, as if you would have taken them all into account!
+>
+> rasmussen 2
+
+So this is all about functions too, eh?? We want to estimate *posterior* distributions over functions.
+
+Gaussian Processes are well-known by geo-statisticians, who refer to it as **kriging**, altough they focus mostly on two-dimensional or three-dimensional input spaces.
+
+A GP is an infinite-dimensional generalization of multivariate normal distributions.
+
+The kernel function generalizes to infinite dimensions/ observations/ predictions.
+
+**Continuous categories and the Gaussian Process**
+
+Continuous ordered categories (distances in ages, time, space); we want points that are closer to one another to share more information with one another.
+
+Age example.
+
+> Individuals of the same age share some of the same exposures. They listened to some of the same music, heard about the same politicians, and experienced the same weather events. And individuals of *similar* ages also experienced some of these same exposures, but to a lesser extent than individuals of the same age. The covariation falls off as any two individuals become increasingly dissimilar in age or income or stature or any other dimension that indexes background similarity.
+>
+> mcelreath 468
+>
+> The general purpose is to define some dimension along which cases differ. This might be individual differences in age. Or it could be differences in location. Then we measure the distance between each pair of cases. What the model then does is estimate a function for the covariance between pairs of cases at different distances.
+>
+> 468
+
+He describes this as partial pooling for continuous categories...
+
+https://youtu.be/Y2ZLt4iOrXU?t=624 Add from Gelman about the distances
+
+Distance matrix:
+
+```{r}
+data("islandsDistMatrix", package = "rethinking")
+islandsDistMatrix
+```
+
+Some extra about distance metrics...
+
+## Examples
+
+Do the phylogeny examples with hierarchical clustering, do gap statistic, and with GP for comparison.
+
+Then revisit second-year paper.
+
+```{r}
+data("Primates301", package = "rethinking")
+data("Primates301_nex", package = "rethinking")
+```
+
+https://betanalpha.github.io/assets/case_studies/gaussian_processes.html

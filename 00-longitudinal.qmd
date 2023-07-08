@@ -42,7 +42,7 @@ library(tidyverse)
 library(panelr)
 data("teen_poverty", package = "panelr")  ## five wave panel of teenage girls
 
-teen_long <- teen_poverty |> 
+teen_long1 <- teen_poverty |> 
   panelr::long_panel(
     id = "id",       # the name of the existing ID variable
     wave = "wave",   # the name you want for the new time variable
@@ -52,13 +52,53 @@ teen_long <- teen_poverty |>
 
 ## repeat with pivot longer
 
-teen_long <- teen_poverty |> 
+teen_long2 <- teen_poverty |> 
   pivot_longer(cols = matches("\\d$"), 
                names_to = c(".value", "wave"),
                names_pattern = "(.*)(.)",
                names_transform = list(wave = as.integer)) |> 
   mutate(id = factor(id)) |> 
   group_by(id)
+
+
+identical(teen_long1, teen_long2)
+
+teen_poverty
+
+one <- function() {
+  teen_poverty |> 
+    panelr::long_panel(
+    id = "id",       # the name of the existing ID variable
+    wave = "wave",   # the name you want for the new time variable
+    begin = 1,       # the indicator of the first period
+    end = 5          # the indicator of the last period
+  )
+}
+
+two <- function() {
+  teen_poverty |> 
+  pivot_longer(cols = matches("\\d$"), 
+               names_to = c(".value", "wave"),
+               names_pattern = "(.*)(.)",
+               names_transform = list(wave = as.integer)) |> 
+  mutate(id = factor(id)) |> 
+  group_by(id)
+  
+  
+}
+
+
+out <- bench::mark(
+  iterations = 100,
+  check = FALSE,
+  one(),
+  two()
+)
+
+
+
+## repeat with pivot longer
+
 ```
 
 This is how the data looks like now:
@@ -415,3 +455,7 @@ Here we used mixed models to understand *trajectories.*
 -   The only ways to identify the effect of a time-constant treatment with a mixed model are (1) to have experimental data (like the opiates example) or (2) to adjust for all relevant confounders. This is exactly the same as "regular" regression. The panel structure of the data is doing nothing here to establish causality.
 
 -   If you want stronger causal inferences with observational panel data, you must specifically use **within-person variance** or **time-varying treatments**. That is our next topic.
+
+**Fixed effects:**
+
+The whole point of "fixed effects" is to do *within* person comparisons. It protects us against time-constant confounders with time-constant effects. Matching says: lets get rid of all confounders that are observable. Lets get rid of all time-constant unobserved confounders.

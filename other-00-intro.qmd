@@ -1,0 +1,89 @@
+# Spatial Statistics
+
+Temporary placeholder for spatial stuff.
+
+Suppose we are predicting an outcome $y$ (e.g., crime rates) for which we think there is an important amount of spatial organization. We can then think of a distance matrix $\mathbf W$ that connects every observation in the $\mathbf y$ vector. This matrix is going to have certain properties (e.g., symmetric, non-negative, diagonals equal to zero).
+
+A "spatial lag model" takes advantage of these distances:
+
+$$
+\mathbf{y} = \rho \mathbf{Wy} + \mathbf{X} \boldsymbol \beta + \boldsymbol \varepsilon
+$$
+
+See: catchment areas
+
+## Misc
+
+> *Everything is related to everything else, but near things are more related than distant things.*
+
+spatial autocorrelation
+
+maybe change to embedding section
+
+Martin: gravity model, decay parameters with distance, this looks like GP imho
+
+$$
+I_{ij} = \alpha \cdot \frac{M_i \cdot M_j}{d_{ij}^{\beta}}
+$$
+
+In such a model, $M$ represents the "mass" at locations $i$ and $j$; $d$ is some distance metric between $i$ and $j$; $\alpha$ and $\beta$ are parameters to be estimated; and $I_{ij}$ represents the "flow" or "exchange" between $i$ and $j$.
+
+what the fuck are kernels?
+
+kernel density estimation?
+
+https://mgimond.github.io/Spatial/chp11_0.html#chp11_0
+
+https://mgimond.github.io/Spatial/spatial-autocorrelation.html
+
+variograms
+
+https://doi-org.proxy.lib.duke.edu/10.1016/j.spasta.2017.02.006
+
+https://r-spatial.org/book/11-PointPattern.html
+
+## Spatial Point Pattern Analysis
+
+Point pattern analysis is concerned with describing patterns of points over space and making inference about the process that could have generated an observed pattern.
+
+> Important concepts of point patterns analysis are the distinction between a point *pattern* and a point *process*: the latter is the stochastic process that, when sampled, generates a point pattern. A dataset is always a point pattern, and inference involves figuring out the properties of a process that could have generated a pattern like the one we observed. Properties of a spatial point process include
+>
+> -   first order properties: the intensity function measures the number of points per area unit; this function is spatially varying for a *inhomogeneous* point process
+>
+> -   second order properties: given a constant or varying intensity function, describe whether points are distributed independently *from one another*, tend to attract each other (clustering), or repulse each other (more regularly distributed than under complete spatial randomness)
+
+```{r}
+library(sf)
+D <- 2
+N <- 300
+mu <- rep(0, D)
+
+
+sim <- mvtnorm::rmvnorm(N, mu, diag(D))
+
+df <- as.data.frame(sim) |> 
+  setNames(letters[1:D]) |> 
+  st_as_sf(coords = letters[1:D])
+
+plot(df, pch = 21, cex = 1/2)
+
+library(spatstat)
+
+pp <- as.ppp(df)
+qcount <- quadratcount(pp, nx = 10, ny = 10)
+plot(pp, cex = 1/5)
+plot(qcount, add = TRUE)
+
+dens <- density(pp, sigma = bw.diggle)
+plot(dens)
+plot(pp, cex = 1/5, add = TRUE, col = "white")
+
+s <- stars::st_as_stars(dens)
+
+pt <- st_sfc(st_point(c(0, 0))) ## center
+s$dist <- st_as_sf(s, as_points = TRUE, na.rm = FALSE) |> st_distance(pt)
+
+mod <- ppm(pp ~ dist, data = list(dist = as.im(s["dist"])))
+mod
+plot(mod, se = FALSE)
+```
